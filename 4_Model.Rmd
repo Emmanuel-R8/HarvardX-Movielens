@@ -20,7 +20,7 @@ list_features
 
 In this section, we used the reduced and full dataset. However, on all full dataset training attempts, RStudio crashed running out of memory (exceeding 32 GB).
 
-```{r eval=FALSE}
+```{r echo=FALSE}
 set.seed(42, sample.kind = "Rounding")
 
 USE_MODEL_EXTRACT <- TRUE

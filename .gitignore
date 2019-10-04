@@ -1,3 +1,7 @@
+datasets/
+documents/
+ml-10M100K/
+
 # History files
 .Rhistory
 .Rapp.history
