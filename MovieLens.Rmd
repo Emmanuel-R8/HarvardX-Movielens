@@ -1,0 +1,176 @@
+---
+title: "HarvardX - PH125.9x Data Science: Capstone - Movie Lens"
+author: "Emmanuel Rialland - https://github.com/Emmanuel_R8"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+bibliography: bibliography.bib
+fontsize: 11pt
+documentclass: report
+geometry: "left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"
+spacing: double
+keep_md: true
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    keep_tex: true
+    df_print: kable
+    fig_height: 3.5
+  html_document: 
+    number_sections: true
+    df_print: paged
+    theme: united
+---
+
+
+```{r,echo=FALSE,message=FALSE}
+###################################################################################################
+## GLOBAL SETUP
+## 
+
+# Trigger line numbering
+knitr::opts_chunk$set(
+  class.source = "numberLines lineAnchors", 
+  class.output = c("numberLines lineAnchors chunkout") 
+)
+
+# knitr global settings - By default, the final document will not include source code unless 
+# expressly stated.
+ knitr::opts_chunk$set(cache = TRUE,
+                       echo = FALSE,
+                       message = FALSE, 
+                       warning = FALSE,
+                       dev = "png")
+```
+
+
+```{css echo=FALSE}
+code {
+  font-family: Hack, monospace;
+  font-size: 85%;
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  background-color: rgba(0,0,0,0.04);
+  border-radius: 3px;
+}
+
+code:before,
+code:after {
+  letter-spacing: -0.2em;
+  content: "\00a0";
+}
+
+```
+
+<!--- Better HTML output --->
+```{css echo=FALSE}
+pre {
+  font-family: Hack, monospace;
+  font-size: 75%;
+  margin-left: 15%; 
+  #padding: 25%;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  background-color: rgba(0,0,255,0.1);
+  #border-radius: 10px;
+}
+
+```
+
+
+
+```{r preamble,echo=FALSE,message=FALSE}
+### Preamble
+
+# Usual libraries
+library(tidyverse)
+library(lubridate) 
+library(gridExtra)
+
+# Evaluation metrics including RMSE
+library(Metrics)
+
+# Data partitioning, machine learning models, training and prediction
+library(caret)
+
+# Use ds_theme_set()
+library(dslabs)
+ds_theme_set()
+
+# Make things pretty
+library(kableExtra)
+library(RColorBrewer)
+library(corrplot)
+
+```
+
+
+```{r}
+## Coding style
+# - The code makes heavy uses of tidyverse functions even when there would be more concise 
+#   ways to write it. As the expression goes _"Premature optimisation is the root of all evil."_
+#   
+# - local({ ... }) is used when temporary variables are needed. Executing within a local
+# scope avoids cluttering the environment with those variables. 
+```
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+# Introduction
+
+```{r child='1_Introduction.Rmd'}
+```
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+# Data Summary and Processing
+
+```{r child='2_Wrangling.Rmd'}
+```
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+# Visualisation
+
+```{r child='3_Visualisation.Rmd'}
+```
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+# Model
+
+```{r child='4_Model.Rmd'}
+```
+
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+# Stochastic Gradient Descent
+
+```{r child='5_Stochastic_descent.Rmd'}
+```
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+# Conclusion
+
+```{r child='6_Conclusion.Rmd'}
+```
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+# Appendix
+
+```{r child='7_Appendix.Rmd'}
+```
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<!-- This needs to remain at the end of the document, since this is where RMarkdown appends the   -->
+<!-- bibliography by default.                                                                     -->
+
+# References
+
+
+
