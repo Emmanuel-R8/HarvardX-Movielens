@@ -1,0 +1,28 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+This report is a story of failing human intuitions and data science success. In brief, it demonstrates that statistical learning brings insights otherwise unavailable, and eventually achieves and RMSE of *0.
+
+This project is the first of two final projects of the _HarvardX - PH125.9x Data Science_ course.
+
+Its purpose is the development of a recommender system for movie ratings using the Movie Lens dataset ^[https://grouplens.org/datasets/movielens/10m/]. Recommender systems are a class of statistical learning systems that analyse individual past choices and/or preferences to propose relevant information to make future choices. Typical systems would be propose additional items to purchase knowing past shopping activity, searches (e.g. Amazon), choice of books (e.g. GoodRead) or movies (Netflix). 
+
+Broadly, recommender systems fall into two categories:
+
+- _collaborative filtering_ (user-based) which attempts to pool similar users together and guide a user's recommendation given the pool's preference. 
+
+- _content-based filtering_ which attempts to pool similar contents (e.g. shopping carts, movie ratings) together and guide a user's recommendation within a simila pools of content.
+
+In practice, those two approaches are mixed together. A general overview is available on Wikipedia ^[https://en.wikipedia.org/wiki/Recommender_system] and in the course materials ^[https://rafalab.github.io/dsbook/large-datasets.html#recommendation-systems].
+
+
+Being given a training and a validation dataset, we will attempt to minimise the Root Mean Sqared Error (RMSE) of predicted ratings for pairs of user/movie below `0.8649`.
+
+We note that Netflix organised a competition spanning over several years to improve a recommender system which shares many similarities with this project [@bennett2007netflix]. Papers published by teams who participated in that competition have guided some of this report. [@bennett2007netflix] [@bell2007bellkor] [@bell2008bellkor] [@koren2009bellkor] [@toscher2009bigchaos] [@piotte2009pragmatic] [@gower2014netflix]
+
+
+This report is organised as follows. In Section 2, we describe the dataset and add a number of possibly relevant predictors. Section 3 provides a number of visualistions. Section 4 proposes three models that will show to be poor performers. Section 5 is dedicated to a low-rank matrix factorisation estimated with a stochastic gradient descent.
+

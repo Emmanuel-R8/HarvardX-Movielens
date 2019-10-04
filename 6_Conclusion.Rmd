@@ -1,0 +1,19 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+The project developed a recommender system for a movies' set of ratings. After exploring the dataset and visually confirming a number of intuitions about movie ratings, we ran three models: a linear regression, a generalised linear model and a Lasso model (regularised linear model). All three performed poorly against the project target.
+
+We then estimated ratings with a low-rank matrix factorisation estimated through a stochastic gradient descent. This proved very efficient and yielded a RMSE of 0.7996 against the validation dataset.
+
+Two further work avenues are suggested:
+
++ Convergence speed could potentially be improved by noting that the cost function is $\lambda$-strongly convex, and the SGD algorithm can be improved. See section 14.5.3 of [@shalev2014understanding].
+
++ The three models proposed can also be formulated as minimisation of a cost function that can then be minimised using stochastic gradient descent, therefore being able to use the entire dataset.
+
+
+

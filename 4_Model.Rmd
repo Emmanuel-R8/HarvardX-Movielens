@@ -1,0 +1,202 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+list_features <- c("rating", 
+        "movie_nRating_log", "movie_z", "movie_mean_rating", "movie_sd_rating", 
+        "user_nRating_log", "user_z", "user_mean_rating", "user_sd_rating", 
+        "movie_year_out", 
+        "time_since_out", "time_movie_first_log", "time_user_first_log", genres_variables)
+```
+
+From the previous sections, the following variables `list_features` have been shown to be possibly relevant: 
+
+```{r}
+list_features
+```
+
+In this section, we used the reduced and full dataset. However, on all full dataset training attempts, RStudio crashed running out of memory (exceeding 32 GB).
+
+```{r eval=FALSE}
+set.seed(42, sample.kind = "Rounding")
+
+USE_MODEL_EXTRACT <- TRUE
+
+if (USE_MODEL_EXTRACT) {
+  edx_training <- edx_extract
+  edx_test     <- validation_extract 
+  
+} else {
+  # Load the datasets which were saved on disk after using the course source code.
+  # 3.3 GB
+  if(!exists("edx_full"))        edx <- readRDS("datasets/edx_full.rds")
+  
+  # 383 MB
+  if(!exists("validation_full")) validation <- readRDS("datasets/validation_full.rds")
+
+  edx_training <- edx_full
+  edx_test     <- validation_full
+}
+```
+
+
+```{r echo=TRUE}
+# Datasets used for training. 
+# edx_training is either an extract or the full dataset. See source code.
+
+x <- edx_training %>% select(one_of(list_features)) %>% as.matrix() # 2.1 GB on full set
+y <- edx_training %>% select(rating) %>% as.matrix() # 
+```
+
+
+The following helper functions: 
+
++ Make a prediction given a fitted model and return the validation dataset with squared error of each prediction.
+
++ Appends the validation RMSE to a table that will include the 3 models RMSEs. 
+
+
+```{r echo=TRUE}
+# Squared error of predictions in descending order
+square_fit <- function(fit_model){
+  
+  predictions <- fit_model %>% predict(edx_test)
+  
+  return (edx_test %>% 
+            cbind(predictions) %>% 
+            mutate(square_error = (predictions - rating)^2) %>% 
+            arrange(desc(square_error)) 
+  )
+}  
+
+
+RMSEs <- tibble(Model = "Target", RMSE = 0.8649)
+
+add_rmse <- function(name, fit) {
+  rm <- sqrt(sum(fit$square_error) / nrow(fit))
+  rw <- tibble(Model = name, RMSE = rm)
+  RMSEs %>% rbind(rw)
+}
+
+```
+
+## Linear regression
+
+The following runs a linear regression on the training data using the predicting variables listed above. 
+
+```{r m_lm,echo=TRUE,eval=FALSE}
+
+set.seed(42, sample.kind = "Rounding")
+start_time <- Sys.time()
+
+fit_lm <- train(rating ~ ., 
+                data = x, 
+                method = "lm")
+
+# Make predictions
+square_lm <- square_fit(fit_lm) 
+RMSEs     <- add_rmse("lm", square_lm)
+worst_lm  <- square_lm %>% filter(square_error >= 1.5^2)
+
+
+end_time <- Sys.time()
+print(end_time - start_time)
+
+# Results
+#  reduced dataset = 0.8946755	
+#  full dataset = CRASH
+
+
+```
+
+## Generalised Linear regression
+
+The following runs a generalised linear regression on the training data using the predicting variables listed above. 
+
+
+
+```{r m_glm,echo=TRUE,eval=FALSE}
+
+set.seed(42, sample.kind = "Rounding")
+start_time <- Sys.time()
+
+fit_glm <- train(rating ~ ., 
+                 data = x, 
+                 method = "glm")
+
+ # Make predictions
+square_glm <- square_fit(fit_glm) 
+RMSEs      <- add_rmse("glm", square_glm)
+worst_glm <- square_glm %>% filter(square_error >= 1.5^2)
+
+
+end_time <- Sys.time()
+print(end_time - start_time)
+
+
+# Results
+#  reduced dataset = 0.9486	
+#  full dataset = CRASH
+
+```
+
+## LASSO regression
+
+The following runs a regularised linear regression on the training data using the predicting variables listed above. 
+
+LASSO stands for Least Absolute Shrinkage and Selection Operator. The regularisation operates in two ways: 
+
++ The absolute values of the coeeficients is minimised. 
+
++ Values below a certain threshold are nil-led, effectively removing predictors.
+
+
+
+
+```{r m_lasso,echo=TRUE,eval=FALSE}
+
+# save(fit_lasso, square_lasso, worst_glm, file = "datasets/model_lasso.rda")
+# load("datasets/model_lasso.rda")
+
+set.seed(42, sample.kind = "Rounding")
+
+lambda <- 10^seq(-3, 3, length = 10)
+
+fit_lasso <- train(
+  rating ~., 
+  data = x, 
+  method = "glmnet",
+  trControl = trainControl("cv", number = 10),
+  tuneGrid = expand.grid(alpha = 1, lambda = lambda)
+  )
+
+# Model coefficients
+coef(fit_lasso$finalModel, fit_lasso$bestTune$lambda)
+
+# Make predictions
+square_lasso <- square_fit(fit_lasso) 
+RMSEs        <- add_rmse("lasso", square_lasso)
+worst_lasso <- square_lasso %>% filter(square_error >= 1.5^2)
+
+end_time <- Sys.time()
+print(end_time - start_time)
+
+
+# Results
+#  reduced dataset = 0.94837
+#  full dataset = CRASH
+
+
+```
+
+## Conclusion
+
+Those models, although initially promising, do fail to meet our expectations: 
+
++ They reach an RMSE which is good but not below the threshold of 0.8649. The linear regression model performed best with an RMSE = 0.8946.
+
++ More importantly, the training and validation on a very small sample of the datasets (20%). The computational resources required to do anything with more data or more sophisticated models has been out of reach (RStudio has crashed numerous times in the process).
+

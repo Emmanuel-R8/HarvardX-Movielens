@@ -1,0 +1,390 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+This review is focused on the training set, and excludes the validation data. We are working on the same extract of the full dataset as in the previous section.
+
+
+The purpose of the review is to give a high level sense of what the presented data is and 
+some indicative research avenues for modelling. 
+
+We first review individual variables. Then we reviews variables by pairs. 
+
+We have described the `Data Preparation` section the list of variables that were 
+originally provided, as well as reformatted information.
+
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+## Summary analysis of individual variables
+
+### Users
+
+All users are identified by a single numerical ID to ensure anonymity ^[Note that in the
+case of the Netflix challenges, researchers succeeded in de-anonymising part of the 
+dataset by cross-referencing with IMDB information. 
+See [@DBLP:journals/corr/abs-cs-0610105].].
+
+```{r}
+n_users <- edx_extract$userId %>% n_distinct()
+```
+There are `r n_users` unique users in the training dataset. Most of them have rated few movies. 
+
+The following plot shows a log-log plot of number of ratings per user. Recall that the _Movie Lens_ dataset only includes users with 20 or more ratings ^[See the `README.html` file provided by GroupLens in the zip file.]. However, since we are plotting a reduced dataset (20%), we can see users with less than 20 ratings.
+
+
+
+
+```{r v_rating_per_user,fig.cap="Number of ratings per users (log scale)"}
+edx_extract %>% 
+  count(userId)%>%  
+  ggplot(aes(n)) + 
+  geom_histogram(bins = 100, color = "blue") + 
+  scale_x_log10() +
+  scale_y_log10() 
+```
+
+However, plotting the cumulative sum the number of ratings (as a a number between 0% and 100%) reveals that most of the ratings are provided by a minority of users. 
+```{r v_ratings_per_user_cumulative,fig.cap="Cumulative proportion of ratings starting with most active users.",fig.align="center"}
+edx_extract %>% 
+  count(userId)%>% 
+  arrange(desc(n)) %>% 
+  mutate(user = row_number(), 
+         cs = cumsum(n), 
+         cs = cs / max(cs)) %>% 
+  ggplot(aes(user, cs)) +
+  geom_line(color = "blue") 
+```
+
+
+We note the movielens data only includes users who have provided at least 20 ratings. 
+
+
+### Ratings
+
+#### Ratings are not continuous
+
+All ratings are between 0 and 5, say, _stars_ (higher meaning better), using only a whole 
+or half number. A user cannot rate a movie 2.8 or 3.14159. The following code shows that 
+all available ratings  _apart_ from 0 have been used.
+```{r}
+edx_extract %>% 
+  group_by(rating) %>% 
+  summarise(n = n())
+```
+
+We also note that users prefer to use whole numbers instead of half numbers:
+```{r}
+edx_extract %>% 
+  mutate(whole_or_half = rating - floor(rating)) %>% 
+  group_by(whole_or_half) %>% summarise(n = n())
+```
+
+
+
+#### Whole ratings and z-scores
+
+Plotting histograms of the ratings are fairly symmetrical with a marked left-skewness (3rd moment of the distribution). 
+
+
+```{r v_z_score_histograms,fig.cap="Histograms of ratings z-scores"}
+
+local({
+  p <- edx_extract %>% ggplot(aes(rating)) + geom_histogram(bins = 50, color = "blue") 
+
+  pu <- edx_extract %>% ggplot(aes(user_z)) + geom_histogram(bins = 50, color = "blue") 
+
+  pm <- edx_extract %>% ggplot(aes(movie_z)) + geom_histogram(bins = 50, color = "blue") 
+
+  require(gridExtra)
+  grid.arrange(p, pu, pm, ncol = 3) 
+})
+
+```
+
+
+```{r v_mean_rating_per_genre,fig.cap="Average rating per genre"}
+
+edx_extract %>% 
+  # Gather all genres into a single variable
+  pivot_longer(cols = genres_variables, names_to = "genre") %>% filter(value == 1) %>% select(-value) %>% 
+  group_by(genre) %>% 
+  summarize(mean_rating_per_genre = mean(rating)) %>% 
+  arrange(mean_rating_per_genre) %>% 
+
+  ggplot(aes(reorder(genre, mean_rating_per_genre), mean_rating_per_genre)) +
+  geom_bar(stat = "identity", color = "blue") +
+  coord_flip()
+```
+
+
+
+
+## Intuitive statements
+
+We previously made a number of statements driven by intuition. Let us verify those.
+
+### Statement 1
+> _A movie screened for the first time will sometimes be heavily marketed: the decision to watch this movie might be driven by hype rather than a reasoned choice._
+
+A plot of ratings during the first 100 days after they come out seems to corroborate the statement: at the far left of the first plot, there is a wide range of ratings (see the width of the smoothing uncertainty band). As time passes by, ratings drops then stabilise. 
+
+
+```{r v_mean_rating_days_since_out,fig.cap="Ratings for the first 100 days"}
+edx_extract %>% 
+  filter(time_since_out <= 100) %>% 
+  group_by(time_since_out) %>% 
+  summarise(movie_mean_rating = mean(rating)) %>% 
+  ggplot(aes(time_since_out, movie_mean_rating)) +
+  geom_point(color = "blue") +
+  geom_smooth(color = "red") 
+    
+```
+
+
+
+The effect is independent from movie genre (when ignoring all movies that do not have ratings in the early days).
+
+
+
+```{r a_mean_rating_days_since_out_facet,fig.cap="Ratings for the first 100 days by genre"}
+
+edx_extract %>% 
+  filter(time_since_out <= 100) %>% 
+
+    # Gather all genres into a single variable
+  pivot_longer(cols = genres_variables, names_to = "genre") %>% filter(value == 1) %>% select(-value) %>% 
+
+  group_by(time_since_out, genre) %>% 
+  summarise(movie_mean_rating = mean(rating)) %>% 
+  ungroup() %>% 
+  
+  ggplot(aes(time_since_out, movie_mean_rating)) +
+  geom_point(alpha = 0.1, color = "blue") +
+  geom_smooth(color = "red") + 
+  facet_wrap(~ genre) 
+```
+
+
+
+### Statement 2
+
+> _In the medium term after first screening, movie availability could be relevant. Nowadays, the Internet gives access to a huge library of recent and not so recent movies. This was definitely not the case in the years at which ratings started to be collected (mid-nineties)._
+
+For the purpose of determining whether this statement holds in some way, we need to consider:
+
++ What happened to the number of ratings over time since a movie came out: more people would see the movie when in movie theaters, whereas later the movies would have been harder to access.
+
++ Whether these changes in rating numbers vary if a movie is released in the eighties, nineties, and so on.
+
+
+The following plot should be read as follows: 
+ 
+ - choose year on the y-axis, and follow in a straight line from left to right;
+ - the colour shows the number of ratings: the darker, the more numerous;
+ - the first ratings only in 1988, therefore there is a longer and longer delay before the colours appear when going for later dates to older dates.
+
+We can distinguish 4 different zones depending on the first screening date:
+
++ Very early years before 1992: very few ratings (very pale colour) possibly since fewer people decide to watch older movies.
+
++ Early years 1993-1996: Strong effect where many ratings are made when the movie is first screen, then very quiet period. 
+
++ Medium years 1996-1998: Very pale in early weeks getting abit darker from 1999 (going down in a diagonal from top-left to bottom right follows a constant year). We can give any intuitive for this, apart from democratisation of the Internet. This is pure conjecture.
+
++ Recent years 2000 to now: More or less constant colour.
+
+
+
+
+```{r fig.cap="Number of ratings depending on time lapsed since premier and year of premiering"}
+
+local({
+  edx_extract %>% 
+    # Only since the 80's
+    filter(movie_year_out >= 1980) %>% 
+    
+    # Create weekly bucket of time from release date
+    mutate(weeks_from_first_rating = ceiling(time_movie_first / 7)) %>% 
+    
+    # Group by week and movieId    
+    group_by(movie_year_out, weeks_from_first_rating) %>% 
+    
+    # Summarise
+    summarise(number_ratings = n()) %>% 
+    ungroup() %>% 
+    
+    # Create heat map
+    ggplot( mapping = aes(x = weeks_from_first_rating,
+                          y = movie_year_out,
+                          fill = number_ratings)) +
+    geom_tile() + 
+    #scale_fill_continuous(type = "viridis") +
+    scale_fill_gradient(trans = "sqrt", low = "white", high = "steelblue") 
+
+})
+```
+
+### Statement 3
+
+> _The decision to watch a movie that came out decades ago is a very deliberate process of choice. There is a _survival effect_ in the sense that time sieved out bad movies. We could expect old movies, e.g. _Citizen Kane_, to be rated higher on average than recent ones. _
+
+There is clearly an effect where the average rating goes down. More striking is that recent movies are more likely to receive a bad rating, where the variance of ratings for movies before the early seventies is much lower. 
+
+This being said, the impact on average movie ratings is fairly small: it goes from just under 4 to mid-3.
+
+
+```{r mean_rating_vs_year_out,fig.cap="Average rating depending on the premiering year"}
+
+edx_extract %>% 
+  select(movie_year_out, movieId, movie_mean_rating) %>% 
+  ggplot(aes(movie_year_out, movie_mean_rating)) + 
+  geom_point(alpha = 0.05, color = "blue") +
+  geom_smooth(color = "red")
+
+```
+
+
+The statement broadly holds on a genre by genre basis. However, this is clearly not the case for (1) Animation/Children movies (whose quality has dramatically improved and CGI animation clearly caters to a wider audience) and (2) Westerns who have become rarer in recent times and possibly require very strong story/cast to be produced (hence higher average ratings).
+
+
+```{r v_mean_rating_vs_year_out_facet}
+edx_gathered %>% 
+  select(movie_year_out, movie_mean_rating, genre) %>% 
+  ggplot(aes(movie_year_out, movie_mean_rating)) + 
+  geom_point(alpha = 0.03, color = "blue") +
+  geom_smooth(color = "red") +
+  facet_wrap(~ genre)
+
+```
+
+
+### Statement 4
+
+> _In the short term, just a few weeks would make a difference on how a movie is perceived. But whether a movie is 50- or 55-year old would be of little impact. In other words, some sort of rescaling of time, logarithmic or other, need considering._
+
+More generally, ratings are more variable in early weeks than later weeks. See Statement 1 plot.
+
+
+### Statement 5
+
+> _If a movie is very good, many people will watch it and rate it. In other words, we should see some correlation between ratings and numbers of ratings. Again, some sort of rescaling of time, logarithmic or other, need considering._
+
+
+The effect of good movies attracting many spectators is noticeable. It is also very clear that movies with few spectators generate extremely variable results.
+
+
+```{r v_movie_mean_vs_n}
+movieDB %>%
+  ggplot(aes(movie_nRating, movie_mean_rating)) + 
+  geom_point(color = "blue") + 
+  geom_smooth(color = "red")
+```
+
+This effect remains on a genre by genre basis.
+
+
+```{r v_movie_mean_vs_n_facet}
+movieDB %>% 
+  select(-genres) %>% 
+  pivot_longer(cols = genres_variables, names_to = "genre") %>% filter(value == 1) %>% select(-value) %>% 
+  ggplot(aes(movie_nRating, movie_mean_rating)) + 
+  geom_point(color = "blue") + 
+  geom_smooth(color = "red") +
+  facet_wrap(~ genre)
+
+```
+
+### Correlations
+
+
+We plotted variable-to-variable correlations. Nothing striking appears: strongly correlated variables are where they chould be (e.g. a variable and its z-score). All interesting correlations are in line with the intuitive statements proposed above. 
+
+```{r v_correlations_all}
+local({
+  l <-  c("rating", "timestamp", "rating_z", 
+          "movie_nRating", "movie_nRating_log", 
+          "movie_mean_rating", "movie_sd_rating", "movie_median_rating", "movie_z", 
+          "movie_year_out", 
+          "user_nRating", "user_nRating_log", 
+          "user_mean_rating", "user_sd_rating", "user_median_rating", "user_z", 
+          "time_since_out", "time_since_out_log", "time_since_out_sqrt", 
+          "time_movie_first", "time_movie_first_log",  "time_movie_first_sqrt", 
+          "time_user_first",  "time_user_first_log", "time_user_first_sqrt")
+    
+  temp_mat <- edx_extract %>% 
+    select(one_of(l)) %>% 
+    as.matrix() 
+  
+  corr_mat <- temp_mat %>% cor(use = "pairwise.complete.obs")
+  
+  corrplot(corr_mat, 
+           p.mat = cor.mtest(temp_mat, conf.level = 0.95)$p,
+           insig = "pch",
+           order = "hclust", 
+           method = "circle", addrect = 2, 
+           col = brewer.pal(n = 8, name = "RdBu"), 
+           tl.col = "black", tl.srt = 45, tl.cex = 0.7)
+})
+```
+
+
+On a reduced set of variables, the plot becomes:
+
+```{r v_correlations_few}
+local({
+  l <-  c("rating_z", 
+          "movie_nRating_log", "movie_z", "movie_mean_rating", "movie_sd_rating", 
+          "user_nRating_log", "user_z", "user_mean_rating", "user_sd_rating", 
+          "movie_year_out", 
+          "time_since_out", "time_movie_first_log", "time_user_first_log")
+    
+  temp_mat <- edx_extract %>% 
+    select(one_of(l)) %>% 
+    as.matrix() 
+  
+  corr_mat <- temp_mat %>% cor(use = "pairwise.complete.obs")
+  
+  corrplot(corr_mat, 
+           p.mat = cor.mtest(temp_mat, conf.level = 0.95)$p,
+           insig = "pch",
+           order = "hclust", 
+           method = "circle", addrect = 2, 
+           col = brewer.pal(n = 8, name = "RdBu"), 
+           tl.col = "black", tl.srt = 45, tl.cex = 0.7)
+})
+```
+
+
+
+
+
+```{r fashion_effect,eval=FALSE}
+
+### Fashion effect
+
+Correlation between genre
+
+Proportion to each genre when coming out
+
+
+edx_extract %>% 
+  pivot_longer(cols = genres_variables, names_to = "genre") %>% filter(value == 1) %>% select(-value) %>% 
+  group_by(movie_year_out) %>% 
+  mutate(total = n()) %>% 
+  ungroup() %>% 
+  
+  group_by(movie_year_out, genre) %>% 
+  mutate(genre_pct = n() / total) %>% 
+  ungroup() %>%
+  
+  ggplot(aes(x = movie_year_out, y = genre_pct, fill = genre)) +
+  geom_area()
+  
+  
+```
+
+
+
+

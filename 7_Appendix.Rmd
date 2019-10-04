@@ -1,0 +1,16 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+
+## Session Info
+
+```{r}
+
+sessionInfo()
+
+```
+
