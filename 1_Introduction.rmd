@@ -1,10 +1,7 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+# Introduction
 
-This report is a story of failing human intuitions and data science success. In brief, it demonstrates that statistical learning brings insights otherwise unavailable, and eventually achieves and RMSE of *0.
+This report is a story of failing human intuitions and data science success. In brief, it demonstrates that statistical learning brings insights otherwise unavailable, and eventually achieves and 
+RMSE of *0.
 
 This project is the first of two final projects of the _HarvardX - PH125.9x Data Science_ course.
 

@@ -1,27 +1,39 @@
----
+--- 
 title: "HarvardX - PH125.9x Data Science: Capstone - Movie Lens"
+subtitle: "HarvardX - PH125.9x Data Science Capstone"
 author: "Emmanuel Rialland - https://github.com/Emmanuel_R8"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
-bibliography: bibliography.bib
-fontsize: 11pt
-documentclass: report
-geometry: "left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"
-spacing: double
-keep_md: true
+site: bookdown::bookdown_site
 output: 
-  pdf_document:
+  bookdown::pdf_book:
     toc: true
     toc_depth: 3
     number_sections: true
     keep_tex: true
     df_print: kable
-    fig_height: 3.5
   html_document: 
     number_sections: true
     df_print: paged
     theme: united
----
+    
+documentclass: report
+geometry: "a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"
+lot: yes
+lof: yes
 
+fontsize: 11pt
+mainfont: "Lato"
+monofont: "Hack"
+monofontoptions: "Scale=0.7"
+
+bibliography: [packages.bib, bibliography.bib]
+biblio-style: apalike
+link-citations: yes
+colorlinks: yes
+
+github-repo: Emmanuel_R8/HarvardX-Movielens
+description: "HarvardX - PH125.9x Data Science Capstone"
+---
 
 ```{r,echo=FALSE,message=FALSE}
 ###################################################################################################
@@ -34,13 +46,44 @@ knitr::opts_chunk$set(
   class.output = c("numberLines lineAnchors chunkout") 
 )
 
-# knitr global settings - By default, the final document will not include source code unless 
+# knitr global settings - By default, the final document will not include source code unless
 # expressly stated.
- knitr::opts_chunk$set(cache = TRUE,
-                       echo = FALSE,
-                       message = FALSE, 
-                       warning = FALSE,
-                       dev = "png")
+knitr::opts_chunk$set(
+  # Chunks
+  eval = TRUE,
+  cache = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+
+  # filepaths
+  fig.path =   'build/figure/graphics-', 
+  cache.path = 'build/cache/graphics-', 
+  
+  # Graphics
+  out.width = "70%",
+  fig.align = "center",
+  # fig.height = 3,
+
+  # Text size
+  size = "small"
+)
+
+if (knitr::is_html_output()) {
+  knitr::opts_chunk$set(dev = "png")
+} else {
+  knitr::opts_chunk$set(dev = "pdf")
+}
+
+# Modify the size of the code chunks
+# https://stackoverflow.com/questions/25646333/code-chunk-font-size-in-rmarkdown-with-knitr-and-latex
+def.chunk.hook <- knitr::knit_hooks$get("chunk")
+
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size, "\n\n", x, "\n\n \\normalsize"), x)
+})
+
 ```
 
 
@@ -106,7 +149,7 @@ library(corrplot)
 ```
 
 
-```{r}
+```{r echo=FALSE,message=FALSE}
 ## Coding style
 # - The code makes heavy uses of tidyverse functions even when there would be more concise 
 #   ways to write it. As the expression goes _"Premature optimisation is the root of all evil."_
@@ -114,63 +157,6 @@ library(corrplot)
 # - local({ ... }) is used when temporary variables are needed. Executing within a local
 # scope avoids cluttering the environment with those variables. 
 ```
-
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-# Introduction
-
-```{r child='1_Introduction.Rmd'}
-```
-
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-# Data Summary and Processing
-
-```{r child='2_Wrangling.Rmd'}
-```
-
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-# Visualisation
-
-```{r child='3_Visualisation.Rmd'}
-```
-
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-# Model
-
-```{r child='4_Model.Rmd'}
-```
-
-
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-# Stochastic Gradient Descent
-
-```{r child='5_Stochastic_descent.Rmd'}
-```
-
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-# Conclusion
-
-```{r child='6_Conclusion.Rmd'}
-```
-
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-# Appendix
-
-```{r child='7_Appendix.Rmd'}
-```
-
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<!-- This needs to remain at the end of the document, since this is where RMarkdown appends the   -->
-<!-- bibliography by default.                                                                     -->
-
-# References
 
 
 

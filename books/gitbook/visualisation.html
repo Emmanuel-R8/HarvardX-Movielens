@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Visualisation | HarvardX - PH125.9x Data Science: Capstone - Movie Lens</title>
+  <meta name="description" content="HarvardX - PH125.9x Data Science Capstone" />
+  <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Visualisation | HarvardX - PH125.9x Data Science: Capstone - Movie Lens" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="HarvardX - PH125.9x Data Science Capstone" />
+  <meta name="github-repo" content="Emmanuel_R8/HarvardX-Movielens" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Visualisation | HarvardX - PH125.9x Data Science: Capstone - Movie Lens" />
+  
+  <meta name="twitter:description" content="HarvardX - PH125.9x Data Science Capstone" />
+  
+
+<meta name="author" content="Emmanuel Rialland - https://github.com/Emmanuel_R8" />
+
+
+<meta name="date" content="2019-11-12" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="data-summary-and-processing.html"/>
+<link rel="next" href="model.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./introduction.html" target="blank>HarvardX - PH125.9x Data Science: Capstone - Movie Lens</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html"><i class="fa fa-check"></i><b>2</b> Data Summary and Processing</a><ul>
+<li class="chapter" data-level="2.1" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html#description-of-the-dataset"><i class="fa fa-check"></i><b>2.1</b> Description of the dataset</a></li>
+<li class="chapter" data-level="2.2" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html#description-of-the-variables."><i class="fa fa-check"></i><b>2.2</b> Description of the variables.</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html#intuitive-description-of-the-pre-processing-requirements"><i class="fa fa-check"></i><b>2.2.1</b> Intuitive description of the pre-processing requirements</a></li>
+<li class="chapter" data-level="2.2.2" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html#summary-of-the-steps"><i class="fa fa-check"></i><b>2.2.2</b> Summary of the steps</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="visualisation.html"><a href="visualisation.html"><i class="fa fa-check"></i><b>3</b> Visualisation</a><ul>
+<li class="chapter" data-level="3.1" data-path="visualisation.html"><a href="visualisation.html#summary-analysis-of-individual-variables"><i class="fa fa-check"></i><b>3.1</b> Summary analysis of individual variables</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="visualisation.html"><a href="visualisation.html#users"><i class="fa fa-check"></i><b>3.1.1</b> Users</a></li>
+<li class="chapter" data-level="3.1.2" data-path="visualisation.html"><a href="visualisation.html#ratings"><i class="fa fa-check"></i><b>3.1.2</b> Ratings</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="visualisation.html"><a href="visualisation.html#intuitive-statements"><i class="fa fa-check"></i><b>3.2</b> Intuitive statements</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="visualisation.html"><a href="visualisation.html#statement-1"><i class="fa fa-check"></i><b>3.2.1</b> Statement 1</a></li>
+<li class="chapter" data-level="3.2.2" data-path="visualisation.html"><a href="visualisation.html#statement-2"><i class="fa fa-check"></i><b>3.2.2</b> Statement 2</a></li>
+<li class="chapter" data-level="3.2.3" data-path="visualisation.html"><a href="visualisation.html#statement-3"><i class="fa fa-check"></i><b>3.2.3</b> Statement 3</a></li>
+<li class="chapter" data-level="3.2.4" data-path="visualisation.html"><a href="visualisation.html#statement-4"><i class="fa fa-check"></i><b>3.2.4</b> Statement 4</a></li>
+<li class="chapter" data-level="3.2.5" data-path="visualisation.html"><a href="visualisation.html#statement-5"><i class="fa fa-check"></i><b>3.2.5</b> Statement 5</a></li>
+<li class="chapter" data-level="3.2.6" data-path="visualisation.html"><a href="visualisation.html#correlations"><i class="fa fa-check"></i><b>3.2.6</b> Correlations</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model.html"><a href="model.html"><i class="fa fa-check"></i><b>4</b> Model</a><ul>
+<li class="chapter" data-level="4.1" data-path="model.html"><a href="model.html#linear-regression"><i class="fa fa-check"></i><b>4.1</b> Linear regression</a></li>
+<li class="chapter" data-level="4.2" data-path="model.html"><a href="model.html#generalised-linear-regression"><i class="fa fa-check"></i><b>4.2</b> Generalised Linear regression</a></li>
+<li class="chapter" data-level="4.3" data-path="model.html"><a href="model.html#lasso-regression"><i class="fa fa-check"></i><b>4.3</b> LASSO regression</a></li>
+<li class="chapter" data-level="4.4" data-path="model.html"><a href="model.html#conclusion"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html"><i class="fa fa-check"></i><b>5</b> Stochastic Gradient Descent</a><ul>
+<li class="chapter" data-level="5.1" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#latent-factor-model"><i class="fa fa-check"></i><b>5.1</b> Latent factor model</a></li>
+<li class="chapter" data-level="5.2" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#formal-description"><i class="fa fa-check"></i><b>5.2</b> Formal description</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#low-rank-factorisation"><i class="fa fa-check"></i><b>5.2.1</b> Low-rank factorisation</a></li>
+<li class="chapter" data-level="5.2.2" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#gradient-descent"><i class="fa fa-check"></i><b>5.2.2</b> Gradient Descent</a></li>
+<li class="chapter" data-level="5.2.3" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#stochastic-gradient-descent-sgd"><i class="fa fa-check"></i><b>5.2.3</b> Stochastic Gradient Descent (SGD)</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#sgd-code-walk"><i class="fa fa-check"></i><b>5.3</b> SGD Code walk</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>6</b> Appendix</a><ul>
+<li class="chapter" data-level="6.1" data-path="appendix.html"><a href="appendix.html#session-info"><i class="fa fa-check"></i><b>6.1</b> Session Info</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org/" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">HarvardX - PH125.9x Data Science: Capstone - Movie Lens</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="visualisation" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Visualisation</h1>
+<p>This review is focused on the training set, and excludes the validation data. We are working on the same extract of the full dataset as in the previous section.</p>
+<p>The purpose of the review is to give a high level sense of what the presented data is and
+some indicative research avenues for modelling.</p>
+<p>We first review individual variables. Then we reviews variables by pairs.</p>
+<p>We have described the <code>Data Preparation</code> section the list of variables that were
+originally provided, as well as reformatted information.</p>
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<div id="summary-analysis-of-individual-variables" class="section level2">
+<h2><span class="header-section-number">3.1</span> Summary analysis of individual variables</h2>
+<div id="users" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Users</h3>
+<p>All users are identified by a single numerical ID to ensure anonymity.<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></p>
+<p></p>
+<p>
+There are 69750 unique users in the training dataset. Most of them have rated few movies.</p>
+<p>The following plot shows a log-log plot of number of ratings per user. Recall that the <em>Movie Lens</em> dataset only includes users with 20 or more ratings.<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> However, since we are plotting a reduced dataset (20%), we can see users with less than 20 ratings.</p>
+<p></p>
+<div class="figure" style="text-align: center">
+<img src="build/figure/graphics-v_rating_per_user-1.png" alt="Number of ratings per users (log scale)" width="70%" />
+<p class="caption">
+(#fig:v_rating_per_user)Number of ratings per users (log scale)
+</p>
+</div>
+<p></p>
+<p>However, plotting the cumulative sum the number of ratings (as a a number between 0% and 100%) reveals that most of the ratings are provided by a minority of users.</p>
+<p></p>
+<div class="figure" style="text-align: center">
+<img src="build/figure/graphics-v_ratings_per_user_cumulative-1.png" alt="Cumulative proportion of ratings starting with most active users." width="70%" />
+<p class="caption">
+(#fig:v_ratings_per_user_cumulative)Cumulative proportion of ratings starting with most active users.
+</p>
+</div>
+<p></p>
+<p>We note the movielens data only includes users who have provided at least 20 ratings.</p>
+</div>
+<div id="ratings" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Ratings</h3>
+<div id="ratings-are-not-continuous" class="section level4">
+<h4><span class="header-section-number">3.1.2.1</span> Ratings are not continuous</h4>
+<p>All ratings are between 0 and 5, say, <em>stars</em> (higher meaning better), using only a whole
+or half number. A user cannot rate a movie 2.8 or 3.14159. The following code shows that
+all available ratings <em>apart</em> from 0 have been used.</p>
+<p></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource numberLines lineAnchors chunkout"><code class="sourceCode"><a class="sourceLine" id="cb2-1" href="#cb2-1" data-line-number="1">## # A tibble: 10 x 2</a>
+<a class="sourceLine" id="cb2-2" href="#cb2-2" data-line-number="2">##    rating      n</a>
+<a class="sourceLine" id="cb2-3" href="#cb2-3" data-line-number="3">##     &lt;dbl&gt;  &lt;int&gt;</a>
+<a class="sourceLine" id="cb2-4" href="#cb2-4" data-line-number="4">##  1    0.5  16942</a>
+<a class="sourceLine" id="cb2-5" href="#cb2-5" data-line-number="5">##  2    1    69045</a>
+<a class="sourceLine" id="cb2-6" href="#cb2-6" data-line-number="6">##  3    1.5  21447</a>
+<a class="sourceLine" id="cb2-7" href="#cb2-7" data-line-number="7">##  4    2   142056</a>
+<a class="sourceLine" id="cb2-8" href="#cb2-8" data-line-number="8">##  5    2.5  66953</a>
+<a class="sourceLine" id="cb2-9" href="#cb2-9" data-line-number="9">##  6    3   424188</a>
+<a class="sourceLine" id="cb2-10" href="#cb2-10" data-line-number="10">##  7    3.5 158307</a>
+<a class="sourceLine" id="cb2-11" href="#cb2-11" data-line-number="11">##  8    4   517704</a>
+<a class="sourceLine" id="cb2-12" href="#cb2-12" data-line-number="12">##  9    4.5 105809</a>
+<a class="sourceLine" id="cb2-13" href="#cb2-13" data-line-number="13">## 10    5   277561</a></code></pre></div>
+<p></p>
+<p>We also note that users prefer to use whole numbers instead of half numbers:</p>
+<p></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource numberLines lineAnchors chunkout"><code class="sourceCode"><a class="sourceLine" id="cb3-1" href="#cb3-1" data-line-number="1">## # A tibble: 2 x 2</a>
+<a class="sourceLine" id="cb3-2" href="#cb3-2" data-line-number="2">##   whole_or_half       n</a>
+<a class="sourceLine" id="cb3-3" href="#cb3-3" data-line-number="3">##           &lt;dbl&gt;   &lt;int&gt;</a>
+<a class="sourceLine" id="cb3-4" href="#cb3-4" data-line-number="4">## 1           0   1430554</a>
+<a class="sourceLine" id="cb3-5" href="#cb3-5" data-line-number="5">## 2           0.5  369458</a></code></pre></div>
+<p></p>
+</div>
+<div id="whole-ratings-and-z-scores" class="section level4">
+<h4><span class="header-section-number">3.1.2.2</span> Whole ratings and z-scores</h4>
+<p>Plotting histograms of the ratings are fairly symmetrical with a marked left-skewness (3rd moment of the distribution).</p>
+<p></p>
+<div class="figure" style="text-align: center">
+<img src="build/figure/graphics-v_z_score_histograms-1.png" alt="Histograms of ratings z-scores" width="70%" />
+<p class="caption">
+(#fig:v_z_score_histograms)Histograms of ratings z-scores
+</p>
+</div>
+<p></p>
+<p></p>
+<div class="figure" style="text-align: center">
+<img src="build/figure/graphics-v_mean_rating_per_genre-1.png" alt="Average rating per genre" width="70%" />
+<p class="caption">
+(#fig:v_mean_rating_per_genre)Average rating per genre
+</p>
+</div>
+<p></p>
+</div>
+</div>
+</div>
+<div id="intuitive-statements" class="section level2">
+<h2><span class="header-section-number">3.2</span> Intuitive statements</h2>
+<p>We previously made a number of statements driven by intuition. Let us verify those.</p>
+<div id="statement-1" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Statement 1</h3>
+<blockquote>
+<p><em>A movie screened for the first time will sometimes be heavily marketed: the decision to watch this movie might be driven by hype rather than a reasoned choice.</em></p>
+</blockquote>
+<p>A plot of ratings during the first 100 days after they come out seems to corroborate the statement: at the far left of the first plot, there is a wide range of ratings (see the width of the smoothing uncertainty band). As time passes by, ratings drops then stabilise.</p>
+<p></p>
+<div class="figure" style="text-align: center">
+<img src="build/figure/graphics-v_mean_rating_days_since_out-1.png" alt="Ratings for the first 100 days" width="70%" />
+<p class="caption">
+(#fig:v_mean_rating_days_since_out)Ratings for the first 100 days
+</p>
+</div>
+<p></p>
+<p>The effect is independent from movie genre (when ignoring all movies that do not have ratings in the early days).</p>
+<p></p>
+<div class="figure" style="text-align: center">
+<img src="build/figure/graphics-a_mean_rating_days_since_out_facet-1.png" alt="Ratings for the first 100 days by genre" width="70%" />
+<p class="caption">
+(#fig:a_mean_rating_days_since_out_facet)Ratings for the first 100 days by genre
+</p>
+</div>
+<p></p>
+</div>
+<div id="statement-2" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Statement 2</h3>
+<blockquote>
+<p><em>In the medium term after first screening, movie availability could be relevant. Nowadays, the Internet gives access to a huge library of recent and not so recent movies. This was definitely not the case in the years at which ratings started to be collected (mid-nineties).</em></p>
+</blockquote>
+<p>For the purpose of determining whether this statement holds in some way, we need to consider:</p>
+<ul>
+<li><p>What happened to the number of ratings over time since a movie came out: more people would see the movie when in movie theaters, whereas later the movies would have been harder to access.</p></li>
+<li><p>Whether these changes in rating numbers vary if a movie is released in the eighties, nineties, and so on.</p></li>
+</ul>
+<p>The following plot should be read as follows:</p>
+<ul>
+<li>choose year on the y-axis, and follow in a straight line from left to right;</li>
+<li>the colour shows the number of ratings: the darker, the more numerous;</li>
+<li>the first ratings only in 1988, therefore there is a longer and longer delay before the colours appear when going for later dates to older dates.</li>
+</ul>
+<p>We can distinguish 4 different zones depending on the first screening date:</p>
+<ul>
+<li><p>Very early years before 1992: very few ratings (very pale colour) possibly since fewer people decide to watch older movies.</p></li>
+<li><p>Early years 1993-1996: Strong effect where many ratings are made when the movie is first screen, then very quiet period.</p></li>
+<li><p>Medium years 1996-1998: Very pale in early weeks getting abit darker from 1999 (going down in a diagonal from top-left to bottom right follows a constant year). We can give any intuitive for this, apart from democratisation of the Internet. This is pure conjecture.</p></li>
+<li><p>Recent years 2000 to now: More or less constant colour.</p></li>
+</ul>
+<p></p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-12"></span>
+<img src="build/figure/graphics-unnamed-chunk-12-1.png" alt="Number of ratings depending on time lapsed since premier and year of premiering" width="70%" />
+<p class="caption">
+Figure 3.1: Number of ratings depending on time lapsed since premier and year of premiering
+</p>
+</div>
+<p></p>
+</div>
+<div id="statement-3" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Statement 3</h3>
+<blockquote>
+<p><em>The decision to watch a movie that came out decades ago is a very deliberate process of choice. There is a <em>survival effect</em> in the sense that time sieved out bad movies. We could expect old movies, e.g. <em>Citizen Kane</em>, to be rated higher on average than recent ones. </em></p>
+</blockquote>
+<p>There is clearly an effect where the average rating goes down. More striking is that recent movies are more likely to receive a bad rating, where the variance of ratings for movies before the early seventies is much lower.</p>
+<p>This being said, the impact on average movie ratings is fairly small: it goes from just under 4 to mid-3.</p>
+<p></p>
+<div class="figure" style="text-align: center">
+<img src="build/figure/graphics-mean_rating_vs_year_out-1.png" alt="Average rating depending on the premiering year" width="70%" />
+<p class="caption">
+(#fig:mean_rating_vs_year_out)Average rating depending on the premiering year
+</p>
+</div>
+<p></p>
+<p>The statement broadly holds on a genre by genre basis. However, this is clearly not the case for (1) Animation/Children movies (whose quality has dramatically improved and CGI animation clearly caters to a wider audience) and (2) Westerns who have become rarer in recent times and possibly require very strong story/cast to be produced (hence higher average ratings).</p>
+<p></p>
+<p><img src="build/figure/graphics-v_mean_rating_vs_year_out_facet-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p></p>
+</div>
+<div id="statement-4" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> Statement 4</h3>
+<blockquote>
+<p><em>In the short term, just a few weeks would make a difference on how a movie is perceived. But whether a movie is 50- or 55-year old would be of little impact. In other words, some sort of rescaling of time, logarithmic or other, need considering.</em></p>
+</blockquote>
+<p>More generally, ratings are more variable in early weeks than later weeks. See Statement 1 plot.</p>
+</div>
+<div id="statement-5" class="section level3">
+<h3><span class="header-section-number">3.2.5</span> Statement 5</h3>
+<blockquote>
+<p><em>If a movie is very good, many people will watch it and rate it. In other words, we should see some correlation between ratings and numbers of ratings. Again, some sort of rescaling of time, logarithmic or other, need considering.</em></p>
+</blockquote>
+<p>The effect of good movies attracting many spectators is noticeable. It is also very clear that movies with few spectators generate extremely variable results.</p>
+<p></p>
+<p><img src="build/figure/graphics-v_movie_mean_vs_n-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p></p>
+<p>This effect remains on a genre by genre basis.</p>
+<p></p>
+<p><img src="build/figure/graphics-v_movie_mean_vs_n_facet-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p></p>
+</div>
+<div id="correlations" class="section level3">
+<h3><span class="header-section-number">3.2.6</span> Correlations</h3>
+<p>We plotted variable-to-variable correlations. Nothing striking appears: strongly correlated variables are where they chould be (e.g. a variable and its z-score). All interesting correlations are in line with the intuitive statements proposed above.</p>
+<p></p>
+<p><img src="build/figure/graphics-v_correlations_all-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p></p>
+<p>On a reduced set of variables, the plot becomes:</p>
+<p></p>
+<p><img src="build/figure/graphics-v_correlations_few-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p></p>
+<p></p>
+<p></p>
+
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="5">
+<li id="fn5"><p>Note that in the
+case of the Netflix challenges, researchers succeeded in de-anonymising part of the
+dataset by cross-referencing with IMDB information.
+See <span class="citation">(Narayanan and Shmatikov <a href="#ref-DBLP:journals/corr/abs-cs-0610105">2006</a>)</span>.<a href="visualisation.html#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn6"><p>See the <code>README.html</code> file provided by GroupLens in the zip file.<a href="visualisation.html#fnref6" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="data-summary-and-processing.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="model.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/Emmanuel-R8/HarvardX-Movielens/edit/master/3_Visualisation.rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["HarvardX - PH125.9x Data Science: Capstone - Movie Lens.pdf", "HarvardX - PH125.9x Data Science: Capstone - Movie Lens.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

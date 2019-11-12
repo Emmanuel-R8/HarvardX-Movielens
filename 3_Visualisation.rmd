@@ -1,8 +1,5 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+# Visualisation
+
 
 This review is focused on the training set, and excludes the validation data. We are working on the same extract of the full dataset as in the previous section.
 

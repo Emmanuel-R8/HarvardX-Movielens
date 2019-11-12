@@ -1,8 +1,4 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+# Conclusion
 
 
 The project developed a recommender system for a movies' set of ratings. After exploring the dataset and visually confirming a number of intuitions about movie ratings, we ran three models: a linear regression, a generalised linear model and a Lasso model (regularised linear model). All three performed poorly against the project target.

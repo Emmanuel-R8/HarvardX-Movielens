@@ -1,0 +1,12 @@
+# Appendix
+
+
+## Session Info
+
+```{r}
+
+sessionInfo()
+
+```
+
+

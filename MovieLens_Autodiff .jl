@@ -3,9 +3,10 @@ using CSV
 using DataFrames
 using StatsBase
 using Random, Distributions
+using Flux
 
 # Import ratings file
-cd(raw"/home/emmanuel/Development/julia/projects/Movielens/")
+cd(raw"/home/emmanuel/Development/Learning/capstone-movielens/")
 # z = ZipFile.Reader("datasets/ratings.zip")
 # ratings = CSV.read(z.files[1];
 #                 delim="::",
@@ -25,30 +26,6 @@ validation = CSV.read("datasets/validation.csv";
                       datarow=2,
                       header=["rowN", "userId", "movieId", "rating", "timestamp", "title", "genres"],
                       types = [Int, Int, Int, Float64, Int, String, String])
-
-
-function stochastic_grad_descent(P::Array{Float64, 2}, Q::Array{Float64, 2};
-  times = 1, batch_size = 10000, λ = 0.1, α = 0.01, verbose = true)
-
-  for i = 1:times
-    spl_training = view(training, sample(axes(training, 1), batch_size; replace = false, ordered = true), :)
-
-    spl_P = P[spl_training[:,:userN], :]
-    spl_Q = Q[spl_training[:,:movieN], :]
-
-    err = spl_training.rating_z - sum(spl_P .* spl_Q; dims = 2)
-    ΔP = - 2 * err .* spl_Q + λ * spl_P
-    ΔQ = - 2 * err .* spl_P + λ * spl_Q
-
-    P[spl_training[:,:userN], :]  = spl_P - α * ΔP
-    Q[spl_training[:,:movieN], :] = spl_Q - α * ΔQ
-  end # for loop
-
-  return P, Q
-end
-
-
-
 
 r_m, r_sd = mean_and_std(edx.rating)
 
@@ -76,7 +53,6 @@ test = join(test, userIndex, on = :userId )
 test = test[:, [:userN, :movieN, :rating, :rating_z]]
 nTest = size(test)[1]
 
-
 nLF = 3
 
 P = zeros(Float64, nUser, nLF)
@@ -92,14 +68,71 @@ Random.seed!(42)
 P[:, 3] = rand(Normal(), nUser) / 1000
 Q[:, 3] = rand(Normal(), nMovie) / 1000
 
-t = sum( P[test[:,:userN], :] .* Q[test[:,:movieN], :]; dims = 2) .* r_sd .+ r_m
-t = sqrt( sum((test.rating - t).^2) / nTest )
-println("Initial RMSE test = ",t)
+
+# Make P and Q Flux parameters
+P = param(P)
+Q = param(Q)
 
 
+# Cost function on sample
+
+function J(p, q)
+    error = sum( p[test[:,:userN], :] .* q[test[:,:movieN], :]; dims = 2) .* r_sd .+ r_m
+    error = sqrt( sum((test.rating - error).^2) / nTest )
+    
+    return error
+end
+
+P[13, :]
+
+# Cost function on full set
+
+function prediction(user_n, movie_n) = sum( P[user_n, :] .* Q[movie_n, :], dims = 2) .* r_sd + r_m 
+    
+
+function J(p, q)
+    error = sum( p[training[:,:userN], :] .* q[training[:,:movieN], :]; dims = 2) .* r_sd .+ r_m
+    error = sqrt( sum((training.rating - error).^2) / nTest )
+    
+    return error
+end
+ 
+
+# Gradient
+
+dJ = Tracker.gradient(() -> J(p, q), Flux.params(P, Q), nest = true)
+
+
+
+
+function stochastic_grad_descent(P::Array{Float64, 2}, Q::Array{Float64, 2}, grad;
+  times = 1, batch_size = 10000, λ = 0.1, α = 0.01, verbose = true)
+
+  for i = 1:times
+        
+    spl_P = P[spl_training[:,:userN], :]
+    spl_Q = Q[spl_training[:,:movieN], :]
+    
+       
+        
+    P[spl_training[:,:userN], :]  = spl_P - α * ΔP
+    Q[spl_training[:,:movieN], :] = spl_Q - α * ΔQ
+  end # for loop
+
+  return P, Q
+end
+
+float_t = sum( P[test[:,:userN], :] .* Q[test[:,:movieN], :]; dims = 2) .* r_sd .+ r_m
+float_t = sqrt( sum((test.rating - float_t).^2) / nTest )
+println("Initial floating point RMSE test = ",float_t)
+
+round_t = round.(P[test[:,:userN], :] .* Q[test[:,:movieN], :])
+round_t = sum(round_t ; dims = 2) .* r_sd .+ r_m
+round_t = sqrt( sum((test.rating - round_t).^2) / nTest )
+println("Initial rounded RMSE test = ", round_t)
 
 starting_α = 0.01
-validation_results =[0 t]
+validation_results =[0 float_t round_t]
 
 for n = 1:500
   batch_size = 10000
@@ -133,15 +166,30 @@ for n = 1:500
 
   end
 
-  test_RMSE = sum( P[test[:,:userN], :] .* Q[test[:,:movieN], :]; dims = 2) .* r_sd .+ r_m
-  test_RMSE = sqrt( sum((test.rating - test_RMSE).^2) / nTest )
-  println("Step: ", n, "    RMSE test = ",test_RMSE, " with number features = ", nFeatures)
 
-  global validation_results = [validation_results; nFeatures test_RMSE]
+  test_RMSE = P[test[:,:userN], :] .* Q[test[:,:movieN], :]
 
-  # Add 1 features
-  global P = [P rand(Normal(), nUser)/1000]
-  global Q = [Q rand(Normal(), nMovie)/1000]
+  # floating point ratings float_RMSE = sum(test_RMSE ; dims = 2).* r_sd .+ r_m float_RMSE = sqrt( sum((test.rating - float_RMSE).^2) / nTest ) println("Step: ", n, "    float RMSE test = ",float_RMSE, " with number features = ", nFeatures) # Round to only obtain legal ratings round_RMSE = sum( round.(test_RMSE) ; dims = 2).* r_sd .+ r_m round_RMSE = sqrt( sum((test.rating - round_RMSE).^2) / nTest ) println("Step: ", n, "    round RMSE test = ",round_RMSE, " with number features = ", nFeatures) global validation_results = [validation_results; nFeatures float_RMSE round_RMSE] # Add 1 features global P = [P rand(Normal(), nUser)/1000] global Q = [Q rand(Normal(), nMovie)/1000]
   nFeatures += 1
 
+end
+
+function stochastic_grad_descent_simple(P::Array{Float64, 2}, Q::Array{Float64, 2};
+  times = 1, batch_size = 10000, λ = 0.1, α = 0.01, verbose = true)
+
+  for i = 1:times
+    spl_training = view(training, sample(axes(training, 1), batch_size; replace = false, ordered = true), :)
+
+    spl_P = P[spl_training[:,:userN], :]
+    spl_Q = Q[spl_training[:,:movieN], :]
+
+    err = spl_training.rating_z - sum(spl_P .* spl_Q; dims = 2)
+    ΔP = - 2 * err .* spl_Q + λ * spl_P
+    ΔQ = - 2 * err .* spl_P + λ * spl_Q
+
+    P[spl_training[:,:userN], :]  = spl_P - α * ΔP
+    Q[spl_training[:,:movieN], :] = spl_Q - α * ΔQ
+  end # for loop
+
+  return P, Q
 end

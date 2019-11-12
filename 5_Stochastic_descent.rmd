@@ -1,8 +1,5 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+# Stochastic Gradient Descent
+
 
 The previous models were based on the expectation that our intuitions, confirmed by visual inspection of the dataset, would lead to better performing models. This section shows this is incorrect. We here present a more _"brute-force"_ model: a *low-rank matrix factorisation* with is approximated by a *stochastic gradient descent*.
 

@@ -1,8 +1,6 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+# Data Summary and Processing
+
+
 
 ```{r w_setup, warning=FALSE,hide=TRUE,echo=FALSE}
 

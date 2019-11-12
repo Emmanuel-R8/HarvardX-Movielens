@@ -1,0 +1,21 @@
+book_filename: "HarvardX - PH125.9x Data Science: Capstone - Movie Lens"
+output_dir: "documents"
+language:
+  ui:
+    chapter_name: "Chapter "
+delete_merged_file: true
+
+rmd_files: [
+  "MovieLens.rmd",
+  "1_Introduction.rmd",
+  "2_Wrangling.rmd",
+  "3_Visualisation.rmd",
+  "4_Model.rmd",
+  "5_Stochastic_descent.rmd",
+  "7_Appendix.rmd", 
+  "9_References.rmd"
+]
+
+
+
+

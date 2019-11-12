@@ -1,0 +1,22 @@
+bookdown::gitbook:
+  highlight: tango
+  css: style.css
+  config:
+    toc:
+      before: |
+        <li><a href="./introduction.html" target="blank>HarvardX - PH125.9x Data Science: Capstone - Movie Lens</a></li>
+      after: |
+        <li><a href="https://bookdown.org/" target="blank">Published with bookdown</a></li>
+    edit: https://github.com/Emmanuel-R8/HarvardX-Movielens/edit/master/%s
+    download: ["pdf", "epub"]
+
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: pdflatex
+  citation_package: natbib
+  keep_tex: yes
+
+bookdown::epub_book: default
+
+

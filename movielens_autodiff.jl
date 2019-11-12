@@ -5,7 +5,7 @@ using StatsBase
 using Random, Distributions
 
 # Import ratings file
-cd(raw"/home/emmanuel/Development/julia/projects/Movielens/")
+cd(raw"/home/emmanuel/Development/Learning/capstone-movielens/")
 # z = ZipFile.Reader("datasets/ratings.zip")
 # ratings = CSV.read(z.files[1];
 #                 delim="::",
@@ -19,7 +19,7 @@ edx = CSV.read("datasets/edx.csv";
                header=["rowN", "userId", "movieId", "rating", "timestamp", "title", "genres"],
                types = [Int, Int, Int, Float64, Int, String, String])
 
-validation = CSV.read("datasets/validation.csv";
+validation = CSV.read("datasets/v.csv";
                       delim=",",
                       copycols=true,
                       datarow=2,
@@ -92,14 +92,21 @@ Random.seed!(42)
 P[:, 3] = rand(Normal(), nUser) / 1000
 Q[:, 3] = rand(Normal(), nMovie) / 1000
 
-t = sum( P[test[:,:userN], :] .* Q[test[:,:movieN], :]; dims = 2) .* r_sd .+ r_m
-t = sqrt( sum((test.rating - t).^2) / nTest )
-println("Initial RMSE test = ",t)
 
+
+
+float_t = sum( P[test[:,:userN], :] .* Q[test[:,:movieN], :]; dims = 2) .* r_sd .+ r_m
+float_t = sqrt( sum((test.rating - float_t).^2) / nTest )
+println("Initial floating point RMSE test = ",float_t)
+
+round_t = round.(P[test[:,:userN], :] .* Q[test[:,:movieN], :])
+round_t = sum(round_t ; dims = 2) .* r_sd .+ r_m
+round_t = sqrt( sum((test.rating - round_t).^2) / nTest )
+println("Initial rounded RMSE test = ", round_t)
 
 
 starting_α = 0.01
-validation_results =[0 t]
+validation_results =[0 float_t round_t]
 
 for n = 1:500
   batch_size = 10000
@@ -133,15 +140,10 @@ for n = 1:500
 
   end
 
-  test_RMSE = sum( P[test[:,:userN], :] .* Q[test[:,:movieN], :]; dims = 2) .* r_sd .+ r_m
-  test_RMSE = sqrt( sum((test.rating - test_RMSE).^2) / nTest )
-  println("Step: ", n, "    RMSE test = ",test_RMSE, " with number features = ", nFeatures)
 
-  global validation_results = [validation_results; nFeatures test_RMSE]
+  test_RMSE = P[test[:,:userN], :] .* Q[test[:,:movieN], :]
 
-  # Add 1 features
-  global P = [P rand(Normal(), nUser)/1000]
-  global Q = [Q rand(Normal(), nMovie)/1000]
+  # floating point ratings float_RMSE = sum(test_RMSE ; dims = 2).* r_sd .+ r_m float_RMSE = sqrt( sum((test.rating - float_RMSE).^2) / nTest ) println("Step: ", n, "    float RMSE test = ",float_RMSE, " with number features = ", nFeatures) # Round to only obtain legal ratings round_RMSE = sum( round.(test_RMSE) ; dims = 2).* r_sd .+ r_m round_RMSE = sqrt( sum((test.rating - round_RMSE).^2) / nTest ) println("Step: ", n, "    round RMSE test = ",round_RMSE, " with number features = ", nFeatures) global validation_results = [validation_results; nFeatures float_RMSE round_RMSE] # Add 1 features global P = [P rand(Normal(), nUser)/1000] global Q = [Q rand(Normal(), nMovie)/1000]
   nFeatures += 1
 
 end

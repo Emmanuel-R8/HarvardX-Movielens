@@ -1,8 +1,5 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
+# Model 
+
 
 ```{r}
 list_features <- c("rating", 

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 Stochastic Gradient Descent | HarvardX - PH125.9x Data Science: Capstone - Movie Lens</title>
+  <meta name="description" content="HarvardX - PH125.9x Data Science Capstone" />
+  <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 Stochastic Gradient Descent | HarvardX - PH125.9x Data Science: Capstone - Movie Lens" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="HarvardX - PH125.9x Data Science Capstone" />
+  <meta name="github-repo" content="Emmanuel_R8/HarvardX-Movielens" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 Stochastic Gradient Descent | HarvardX - PH125.9x Data Science: Capstone - Movie Lens" />
+  
+  <meta name="twitter:description" content="HarvardX - PH125.9x Data Science Capstone" />
+  
+
+<meta name="author" content="Emmanuel Rialland - https://github.com/Emmanuel_R8" />
+
+
+<meta name="date" content="2019-11-12" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="model.html"/>
+<link rel="next" href="appendix.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./introduction.html" target="blank>HarvardX - PH125.9x Data Science: Capstone - Movie Lens</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html"><i class="fa fa-check"></i><b>2</b> Data Summary and Processing</a><ul>
+<li class="chapter" data-level="2.1" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html#description-of-the-dataset"><i class="fa fa-check"></i><b>2.1</b> Description of the dataset</a></li>
+<li class="chapter" data-level="2.2" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html#description-of-the-variables."><i class="fa fa-check"></i><b>2.2</b> Description of the variables.</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html#intuitive-description-of-the-pre-processing-requirements"><i class="fa fa-check"></i><b>2.2.1</b> Intuitive description of the pre-processing requirements</a></li>
+<li class="chapter" data-level="2.2.2" data-path="data-summary-and-processing.html"><a href="data-summary-and-processing.html#summary-of-the-steps"><i class="fa fa-check"></i><b>2.2.2</b> Summary of the steps</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="visualisation.html"><a href="visualisation.html"><i class="fa fa-check"></i><b>3</b> Visualisation</a><ul>
+<li class="chapter" data-level="3.1" data-path="visualisation.html"><a href="visualisation.html#summary-analysis-of-individual-variables"><i class="fa fa-check"></i><b>3.1</b> Summary analysis of individual variables</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="visualisation.html"><a href="visualisation.html#users"><i class="fa fa-check"></i><b>3.1.1</b> Users</a></li>
+<li class="chapter" data-level="3.1.2" data-path="visualisation.html"><a href="visualisation.html#ratings"><i class="fa fa-check"></i><b>3.1.2</b> Ratings</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="visualisation.html"><a href="visualisation.html#intuitive-statements"><i class="fa fa-check"></i><b>3.2</b> Intuitive statements</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="visualisation.html"><a href="visualisation.html#statement-1"><i class="fa fa-check"></i><b>3.2.1</b> Statement 1</a></li>
+<li class="chapter" data-level="3.2.2" data-path="visualisation.html"><a href="visualisation.html#statement-2"><i class="fa fa-check"></i><b>3.2.2</b> Statement 2</a></li>
+<li class="chapter" data-level="3.2.3" data-path="visualisation.html"><a href="visualisation.html#statement-3"><i class="fa fa-check"></i><b>3.2.3</b> Statement 3</a></li>
+<li class="chapter" data-level="3.2.4" data-path="visualisation.html"><a href="visualisation.html#statement-4"><i class="fa fa-check"></i><b>3.2.4</b> Statement 4</a></li>
+<li class="chapter" data-level="3.2.5" data-path="visualisation.html"><a href="visualisation.html#statement-5"><i class="fa fa-check"></i><b>3.2.5</b> Statement 5</a></li>
+<li class="chapter" data-level="3.2.6" data-path="visualisation.html"><a href="visualisation.html#correlations"><i class="fa fa-check"></i><b>3.2.6</b> Correlations</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="model.html"><a href="model.html"><i class="fa fa-check"></i><b>4</b> Model</a><ul>
+<li class="chapter" data-level="4.1" data-path="model.html"><a href="model.html#linear-regression"><i class="fa fa-check"></i><b>4.1</b> Linear regression</a></li>
+<li class="chapter" data-level="4.2" data-path="model.html"><a href="model.html#generalised-linear-regression"><i class="fa fa-check"></i><b>4.2</b> Generalised Linear regression</a></li>
+<li class="chapter" data-level="4.3" data-path="model.html"><a href="model.html#lasso-regression"><i class="fa fa-check"></i><b>4.3</b> LASSO regression</a></li>
+<li class="chapter" data-level="4.4" data-path="model.html"><a href="model.html#conclusion"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html"><i class="fa fa-check"></i><b>5</b> Stochastic Gradient Descent</a><ul>
+<li class="chapter" data-level="5.1" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#latent-factor-model"><i class="fa fa-check"></i><b>5.1</b> Latent factor model</a></li>
+<li class="chapter" data-level="5.2" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#formal-description"><i class="fa fa-check"></i><b>5.2</b> Formal description</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#low-rank-factorisation"><i class="fa fa-check"></i><b>5.2.1</b> Low-rank factorisation</a></li>
+<li class="chapter" data-level="5.2.2" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#gradient-descent"><i class="fa fa-check"></i><b>5.2.2</b> Gradient Descent</a></li>
+<li class="chapter" data-level="5.2.3" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#stochastic-gradient-descent-sgd"><i class="fa fa-check"></i><b>5.2.3</b> Stochastic Gradient Descent (SGD)</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="stochastic-gradient-descent.html"><a href="stochastic-gradient-descent.html#sgd-code-walk"><i class="fa fa-check"></i><b>5.3</b> SGD Code walk</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>6</b> Appendix</a><ul>
+<li class="chapter" data-level="6.1" data-path="appendix.html"><a href="appendix.html#session-info"><i class="fa fa-check"></i><b>6.1</b> Session Info</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org/" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">HarvardX - PH125.9x Data Science: Capstone - Movie Lens</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="stochastic-gradient-descent" class="section level1">
+<h1><span class="header-section-number">Chapter 5</span> Stochastic Gradient Descent</h1>
+<p>The previous models were based on the expectation that our intuitions, confirmed by visual inspection of the dataset, would lead to better performing models. This section shows this is incorrect. We here present a more <em>“brute-force”</em> model: a <em>low-rank matrix factorisation</em> with is approximated by a <em>stochastic gradient descent</em>.</p>
+<p>This model proves to be very efficient:</p>
+<ul>
+<li><p>Before any training, the validation set RMSE is 0.88516 thanks to a non-naive (i.e. not random) initialisation;</p></li>
+<li><p>After very little training, using the initial 3 features (explained below), the RMSE became 0.8304 which improves on the targetted RMSE.</p></li>
+<li><p>A few hours of training brings the RMSE down to <em>0.7996</em> with 11 features.<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> Visually, the RMSE improvements suggest that additional features may help.</p></li>
+</ul>
+<div id="latent-factor-model" class="section level2">
+<h2><span class="header-section-number">5.1</span> Latent factor model</h2>
+<p>The approach we follow ia a Latent Factor Model. This section partly draws on part 9 of the Stanford Machine Learning course taught by Andrew Ng (which we previously completed), and a blog post by Sonya Sawtelle.<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a></p>
+<p>In essence, this is a dimension reduction model. But two differences reduce the computational workload:</p>
+<ul>
+<li><p>Users and movies are coalesced into groups of similar users and similar movies. This is purely based on the triplets user / movie / rescaled rating. Information about dates, genres is ignored.</p></li>
+<li><p>The model is trained by Stochastic Gradient Descent (SGD). Gradient descent methods are a class of optimisation algorithms that minimise a cost function following downward gradients. SGD is a stochastic version of it where random subsets of the training set are used to converge on very large datasets.</p></li>
+</ul>
+</div>
+<div id="formal-description" class="section level2">
+<h2><span class="header-section-number">5.2</span> Formal description</h2>
+<div id="low-rank-factorisation" class="section level3">
+<h3><span class="header-section-number">5.2.1</span> Low-rank factorisation</h3>
+<div id="singular-value-decomposition" class="section level4">
+<h4><span class="header-section-number">5.2.1.1</span> Singular Value Decomposition</h4>
+<p>As noted in the course material (section 34.1.1), singular value decomposition (SVD) is widely used in machine learning. Wikipedia provides a general description which includes a geometric intuition.<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a></p>
+<p>However, this approach is not feasible: the dimensions are too large, the dataset is extremely sparse.</p>
+</div>
+<div id="low-rank-matrix-factorisation-lrmf" class="section level4">
+<h4><span class="header-section-number">5.2.1.2</span> Low-rank matrix factorisation (LRMF)</h4>
+<p>At a high level, the purpose of this assignment is to estimate a matrix <span class="math inline">\(R\)</span> of <span class="math inline">\(N_{users}\)</span> rows by <span class="math inline">\(N_{movies}\)</span> columns, where each value contains the rating given by a user to a movie. This is to be estimated from a sample of values from the training set.</p>
+<p>The intuitive and geometric intuition of LRMF is as follows:</p>
+<ul>
+<li><p>Work in a low dimensional space (<span class="math inline">\(k\)</span> dimensions).</p></li>
+<li><p>In that space, give each user <span class="math inline">\(u\)</span> and movie <span class="math inline">\(m\)</span> coordinates in that space (<span class="math inline">\(u = (u_1, ..., u_k)\)</span> and <span class="math inline">\(m = (m_1, ..., m_k)\)</span>).</p></li>
+<li><p>Note that the cross-product of two points in that space will be zero or close to zero if the points are in perpendicular directions. Conversely, points in a close zone in that space will have a cross-product away from zero. In that sense, movies and users can be grouped together in that space: similar movies would be in the same zone of space, different movies would be in perpendicular positions. Because movies ans users both have coordinates in that space, then can all be mixed and grouped: one can measure the similarities between movies, user or between movie and user. The dimensions are commonly called <em>features</em>.</p></li>
+</ul>
+<p>In practice, LRMF is represented by two matrices each with <span class="math inline">\(k\)</span> columns: <span class="math inline">\(P\)</span> of <span class="math inline">\(N_{users}\)</span> rows, and <span class="math inline">\(Q\)</span> of <span class="math inline">\(N_{users}\)</span> rows. The <span class="math inline">\(k\)</span> columns give the <span class="math inline">\(k\)</span> coordinates of each user and movie in the feature space. Choosing a user and a movie, the cross-product of the corresponding rows in <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> gives <span class="math inline">\(u \times m = \sum_{i = 1}^{k}{u_i m_i}\)</span> and should produce a rating.</p>
+<p>The purpose of the algorithm is then to estimate <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> so that the cross-products match that of the training sets. That is, n matrix notation, <span class="math inline">\(R\)</span> is estimated by <span class="math inline">\(P Q^{\top}\)</span>.</p>
+<p><img src="images/matrix_factorization.png" alt="Low-Rank Factorisation" /><a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a></p>
+<p>It is important to note that the only information used is the rating. Knowledge about the genres of the movies, timestamp of a rating, year a movie premiered is ignored.</p>
+</div>
+</div>
+<div id="gradient-descent" class="section level3">
+<h3><span class="header-section-number">5.2.2</span> Gradient Descent</h3>
+<p>SVD is not useful in our context because (1) the size of the matrices involved is too large, and (2) more importantly requires a fully populated matrix (filling out missing values is a difficult issue).</p>
+<p>Instead, we will iteratively estimate the <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> matrices’ coefficients by gradient descent. The cost function used represents prediction error with an additional regularisation cost over those coefficients.</p>
+<div id="cost-function" class="section level4">
+<h4><span class="header-section-number">5.2.2.1</span> Cost function</h4>
+<p>Let’s use the following terms:</p>
+<ul>
+<li><span class="math inline">\(\Omega\)</span> is the set of all <span class="math inline">\((user, movie)\)</span> pairs in the training set;</li>
+<li>For each <span class="math inline">\((u,m)\)</span> in <span class="math inline">\(\Omega\)</span>, <span class="math inline">\(r_{u,m}\)</span> is the rating in the training set.</li>
+<li><span class="math inline">\(P\)</span> is written as <span class="math inline">\(p_{i,k}\)</span>, <span class="math inline">\(Q\)</span> is written as <span class="math inline">\(q_{j,k}\)</span> with <span class="math inline">\(i \in [1,...,N_{users}]\)</span>, <span class="math inline">\(j \in [1,...,N_{movies}]\)</span> and <span class="math inline">\(k \in [1,...,N_{features}]\)</span>.</li>
+<li><span class="math inline">\(\lambda\)</span> is the regularisation parameter.</li>
+</ul>
+<p>Our regularised cost function is written:</p>
+<p><span class="math display">\[ 
+J_{P,Q} = \sum_{(i, j) \in \Omega} {\left (  r_{i,j} - \sum_{k=1}^{N_{features}}{p_{i,k} q_{j,k}} \right )^2} + \frac{\lambda}{2} \left (  \sum_{i,k}{p_{i,k}^2} +  \sum_{j,k}{q_{j,k}^2} \right ) 
+\]</span></p>
+<p>The gradient descent algorithm seeks to minimise the <span class="math inline">\(J_{P,Q}\)</span> cost function by step-wise update of each model parameter <span class="math inline">\(x\)</span> as follows:</p>
+<p><span class="math display">\[
+x_{t+1} \leftarrow x_{t} - \alpha \frac{\partial J_{P,Q}}{\partial x} 
+\]</span></p>
+<p>The parameters are the matrix coefficients <span class="math inline">\(p_{i,k}\)</span> <span class="math inline">\(q_{j,k}\)</span>. <span class="math inline">\(\alpha\)</span> is the learning parameter that needs to be adjusted.</p>
+</div>
+<div id="cost-function-partial-derivatives" class="section level4">
+<h4><span class="header-section-number">5.2.2.2</span> Cost function partial derivatives</h4>
+<p>The partial derivatives of the cost function is:</p>
+<p><span class="math display">\[
+\frac{\partial J_{P,Q}}{\partial x} = \frac{\partial}{\partial x} \left ( \sum_{(i, j) \in \Omega} {\left ( r_{i,j} - \sum_{k=1}^{N_{features}}{p_{i,k} q_{j,k}} \right )^2} + \frac{\lambda}{2} \left ( \sum_{i,k}{p_{i,k}^2} + \sum_{j,k}{q_{j,k}^2} \right ) \right )
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial J_{P,Q}}{\partial x} = \sum_{(i, j) \in \Omega} { 2 \frac{\partial r_{i,j} - \sum_{k=1}^{N_{features}} {p_{i,k} q_{j,k}}} {\partial x} \left (  r_{i,j} - \sum_{k=1}^{N_{features}}{p_{i,k} q_{j,k}} \right )  } + \frac{\lambda}{2} \left ( \sum_{i,k}{2 \frac{\partial p_{i,k}}{\partial x} p_{i,k}} + \sum_{j,k}{2 \frac{\partial p_{i,k}}{\partial x} q_{j,k}} \right ) 
+\]</span></p>
+<p>We note that <span class="math inline">\(r_{i,j}\)</span> are constants</p>
+<p><span class="math display">\[
+\frac{\partial J_{P,Q}}{\partial x} = 2 \sum_{(i, j) \in \Omega} \sum_{k=1}^{N_{features}}  \left (  {     \frac{\partial - {p_{i,k} q_{j,k}}}{\partial x} \left (  r_{i,j} - \sum_{k=1}^{N_{features}}{p_{i,k} q_{j,k}} \right ) }  \right ) + \lambda \left (    \sum_{i,k}{\frac{\partial p_{i,k}}{\partial x} p_{i,k}} + \sum_{j,k}{\frac{\partial p_{i,k}}{\partial x} q_{j,k}} \right ) 
+\]</span></p>
+<p>If <span class="math inline">\(x\)</span> is a coefficient of <span class="math inline">\(P\)</span> (resp. <span class="math inline">\(Q\)</span>), say <span class="math inline">\(p_{a,b}\)</span> (resp. <span class="math inline">\(q_{a,b}\)</span>), all partial derivatives will be nil unless for <span class="math inline">\((i,j) = (a,b)\)</span>.</p>
+<p>Therefore:</p>
+<p><span class="math display">\[ 
+\frac{\partial J_{P,Q}}{\partial p_{a,b}} = -2 \sum_{(i, j) \in \Omega} { q_{j,b} \left (  r_{i,j} - \sum_{k=1}^{N_{features}}{p_{i,k} q_{j,k}} \right )} + \lambda p_{a,b} 
+\]</span></p>
+<p>and,</p>
+<p><span class="math display">\[
+\frac{\partial J_{P,Q}}{\partial q_{a,b}} = -2 \sum_{(i, j) \in \Omega} { p_{i,b} \left (  r_{i,j} - \sum_{k=1}^{N_{features}}{p_{i,k} q_{j,k}} \right ) } + \lambda q_{a,b} 
+\]</span></p>
+<p>Since <span class="math inline">\(\epsilon{i, j} = r_{i,j} - \sum_{k=1}^{N_{features}}{p_{i,k} q_{j,k}}\)</span> is the rating prediction error, this becomes:</p>
+<p><span class="math display">\[ 
+\frac{\partial J_{P,Q}}{\partial p_{a,b}} = -2 \sum_{(i, j) \in \Omega} { q_{j,b} \epsilon_{i,j}} + \lambda p_{a,b} 
+\]</span>
+and,</p>
+<p><span class="math display">\[
+\frac{\partial J_{P,Q}}{\partial q_{a,b}} = -2 \sum_{(i, j) \in \Omega} { p_{i,b} \epsilon_{i,j} } + \lambda q_{a,b} 
+\]</span></p>
+</div>
+</div>
+<div id="stochastic-gradient-descent-sgd" class="section level3">
+<h3><span class="header-section-number">5.2.3</span> Stochastic Gradient Descent (SGD)</h3>
+<p>The size of the datasets is prohibitive to do those calculations across the entire training set.</p>
+<p>Instead, we will repeatedly update the model parameters on small random samples of the training set.</p>
+<p>Chapter 14 of <span class="citation">(Shalev-Shwartz and Ben-David <a href="#ref-shalev2014understanding">2014</a>)</span> gives an extensive introduction to various SGD algorithms.</p>
+<p>We implemented a simple version of the algorithm and present the code in more detail.</p>
+</div>
+</div>
+<div id="sgd-code-walk" class="section level2">
+<h2><span class="header-section-number">5.3</span> SGD Code walk</h2>
+<p>The algorithm is implemented from scratch and relies on nothing but the <code>Tidyverse</code> libraries.</p>
+<p></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" href="#cb10-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a></code></pre></div>
+<p></p>
+<p>The quality of the training and predictions is measured by the <em>root mean squared error</em> (RMSE), for which we define a few helper functions (the global variables are defined later):</p>
+<p></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" href="#cb11-1" data-line-number="1">rmse_training &lt;-<span class="st"> </span><span class="cf">function</span>(){</a>
+<a class="sourceLine" id="cb11-2" href="#cb11-2" data-line-number="2">  prediction_Z &lt;-<span class="st"> </span><span class="kw">rowSums</span>(Matrices<span class="op">$</span>P[tri_train<span class="op">$</span>userN,] <span class="op">*</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-3" href="#cb11-3" data-line-number="3"><span class="st">                            </span>Matrices<span class="op">$</span>Q[tri_train<span class="op">$</span>movieN,])</a>
+<a class="sourceLine" id="cb11-4" href="#cb11-4" data-line-number="4">  prediction &lt;-<span class="st"> </span>prediction_Z <span class="op">*</span><span class="st"> </span>r_sd <span class="op">+</span><span class="st"> </span>r_m</a>
+<a class="sourceLine" id="cb11-5" href="#cb11-5" data-line-number="5">  <span class="kw">sqrt</span>( <span class="kw">sum</span>((tri_train<span class="op">$</span>rating <span class="op">-</span><span class="st"> </span>prediction)<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span>nSamples) )</a>
+<a class="sourceLine" id="cb11-6" href="#cb11-6" data-line-number="6">}</a>
+<a class="sourceLine" id="cb11-7" href="#cb11-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb11-8" href="#cb11-8" data-line-number="8">rmse_validation &lt;-<span class="st"> </span><span class="cf">function</span>(){</a>
+<a class="sourceLine" id="cb11-9" href="#cb11-9" data-line-number="9">  prediction_Z &lt;-<span class="st"> </span><span class="kw">rowSums</span>(Matrices<span class="op">$</span>P[tri_test<span class="op">$</span>userN,] <span class="op">*</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-10" href="#cb11-10" data-line-number="10"><span class="st">                            </span>Matrices<span class="op">$</span>Q[tri_test<span class="op">$</span>movieN,])</a>
+<a class="sourceLine" id="cb11-11" href="#cb11-11" data-line-number="11">  prediction &lt;-<span class="st"> </span>prediction_Z <span class="op">*</span><span class="st"> </span>r_sd <span class="op">+</span><span class="st"> </span>r_m</a>
+<a class="sourceLine" id="cb11-12" href="#cb11-12" data-line-number="12">  <span class="kw">sqrt</span>( <span class="kw">sum</span>((tri_test<span class="op">$</span>rating <span class="op">-</span><span class="st"> </span>prediction)<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span>nTest )</a>
+<a class="sourceLine" id="cb11-13" href="#cb11-13" data-line-number="13">  }</a>
+<a class="sourceLine" id="cb11-14" href="#cb11-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb11-15" href="#cb11-15" data-line-number="15">sum_square &lt;-<span class="st"> </span><span class="cf">function</span>(v){</a>
+<a class="sourceLine" id="cb11-16" href="#cb11-16" data-line-number="16">  <span class="kw">return</span> (<span class="kw">sqrt</span>(<span class="kw">sum</span>(v<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span><span class="kw">nrow</span>(v)))</a>
+<a class="sourceLine" id="cb11-17" href="#cb11-17" data-line-number="17">}</a></code></pre></div>
+<p></p>
+<p>The key function updates the model coefficients. Its inputs are:</p>
+<ul>
+<li><p>a list that contains the <span class="math inline">\(P\)</span> an <span class="math inline">\(Q\)</span> matrices, the training RMSE of those matrices, and a logical value indicating whether this RMSE is worse than what it was before the update (i.e. did the update diverge).</p></li>
+<li><p>a <code>batch_size</code> that defines the number of samples to be drawn from the training set. A normal gradient descent would use the full training set; by default we only use 10,000 samples out of 10 million (one tenth of a percent).</p></li>
+<li><p>The cost regularisation <code>lambda</code> and gradient descent learning parameter <code>alpha</code>.</p></li>
+<li><p>A number of <code>times</code> to run the descent before recalculating the RMSE and exiting the function (calculating the RMSE is computationally expensive).</p></li>
+</ul>
+<p>The training set used is less rich than the original set. As discussed, it only uses the rating (more exactly on the z_score of the rating). Genres, timestamps,… are discarded.</p>
+<p></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" href="#cb12-1" data-line-number="1"><span class="co"># Iterate gradient descent</span></a>
+<a class="sourceLine" id="cb12-2" href="#cb12-2" data-line-number="2">stochastic_grad_descent &lt;-<span class="st"> </span><span class="cf">function</span>(model, <span class="dt">times =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb12-3" href="#cb12-3" data-line-number="3">                                    <span class="dt">batch_size =</span> <span class="dv">10000</span>, <span class="dt">lambda =</span> <span class="fl">0.1</span>, <span class="dt">alpha =</span> <span class="fl">0.01</span>,</a>
+<a class="sourceLine" id="cb12-4" href="#cb12-4" data-line-number="4">                                    <span class="dt">verbose =</span> <span class="ot">TRUE</span>) {</a>
+<a class="sourceLine" id="cb12-5" href="#cb12-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb12-6" href="#cb12-6" data-line-number="6">  <span class="co"># Run the descent `times` times.</span></a>
+<a class="sourceLine" id="cb12-7" href="#cb12-7" data-line-number="7">  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>times) {</a>
+<a class="sourceLine" id="cb12-8" href="#cb12-8" data-line-number="8">    </a>
+<a class="sourceLine" id="cb12-9" href="#cb12-9" data-line-number="9">    <span class="co"># Extract a sample of size `batch_size` from the training set.</span></a>
+<a class="sourceLine" id="cb12-10" href="#cb12-10" data-line-number="10">    spl &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>nSamples, <span class="dt">size =</span> batch_size, <span class="dt">replace =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb12-11" href="#cb12-11" data-line-number="11">    spl_training_values &lt;-<span class="st"> </span>tri_train[spl,]</a>
+<a class="sourceLine" id="cb12-12" href="#cb12-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb12-13" href="#cb12-13" data-line-number="13">    <span class="co"># Take a subset of `P` and `Q` matching the users and </span></a>
+<a class="sourceLine" id="cb12-14" href="#cb12-14" data-line-number="14">    <span class="co"># movies in the training sample.</span></a>
+<a class="sourceLine" id="cb12-15" href="#cb12-15" data-line-number="15">    spl_P &lt;-<span class="st"> </span>model<span class="op">$</span>P[spl_training_values<span class="op">$</span>userN,]</a>
+<a class="sourceLine" id="cb12-16" href="#cb12-16" data-line-number="16">    spl_Q &lt;-<span class="st"> </span>model<span class="op">$</span>Q[spl_training_values<span class="op">$</span>movieN,]</a>
+<a class="sourceLine" id="cb12-17" href="#cb12-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb12-18" href="#cb12-18" data-line-number="18">    <span class="co"># rowSums returns the cross-product for a given user and movie.</span></a>
+<a class="sourceLine" id="cb12-19" href="#cb12-19" data-line-number="19">    <span class="co"># err is the term inside brackets in the partial derivatives </span></a>
+<a class="sourceLine" id="cb12-20" href="#cb12-20" data-line-number="20">    <span class="co"># calculation above.</span></a>
+<a class="sourceLine" id="cb12-21" href="#cb12-21" data-line-number="21">    err &lt;-<span class="st"> </span>spl_training_values<span class="op">$</span>rating_z <span class="op">-</span><span class="st"> </span><span class="kw">rowSums</span>(spl_P <span class="op">*</span><span class="st"> </span>spl_Q)</a>
+<a class="sourceLine" id="cb12-22" href="#cb12-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb12-23" href="#cb12-23" data-line-number="23">    <span class="co"># Partial derivatives wrt p and q</span></a>
+<a class="sourceLine" id="cb12-24" href="#cb12-24" data-line-number="24">    delta_P &lt;-<span class="st"> </span><span class="op">-</span>err <span class="op">*</span><span class="st"> </span>spl_Q <span class="op">+</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span>spl_P</a>
+<a class="sourceLine" id="cb12-25" href="#cb12-25" data-line-number="25">    delta_Q &lt;-<span class="st"> </span><span class="op">-</span>err <span class="op">*</span><span class="st"> </span>spl_P <span class="op">+</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span>spl_Q</a>
+<a class="sourceLine" id="cb12-26" href="#cb12-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb12-27" href="#cb12-27" data-line-number="27">    model<span class="op">$</span>P[spl_training_values<span class="op">$</span>userN,]  &lt;-<span class="st"> </span>spl_P <span class="op">-</span><span class="st"> </span>alpha <span class="op">*</span><span class="st"> </span>delta_P</a>
+<a class="sourceLine" id="cb12-28" href="#cb12-28" data-line-number="28">    model<span class="op">$</span>Q[spl_training_values<span class="op">$</span>movieN,] &lt;-<span class="st"> </span>spl_Q <span class="op">-</span><span class="st"> </span>alpha <span class="op">*</span><span class="st"> </span>delta_Q</a>
+<a class="sourceLine" id="cb12-29" href="#cb12-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb12-30" href="#cb12-30" data-line-number="30">  }</a>
+<a class="sourceLine" id="cb12-31" href="#cb12-31" data-line-number="31"></a>
+<a class="sourceLine" id="cb12-32" href="#cb12-32" data-line-number="32">  <span class="co"># RMSE against the training set</span></a>
+<a class="sourceLine" id="cb12-33" href="#cb12-33" data-line-number="33">  error &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">sum</span>(</a>
+<a class="sourceLine" id="cb12-34" href="#cb12-34" data-line-number="34">    (tri_train<span class="op">$</span>rating_z <span class="op">-</span><span class="st"> </span><span class="kw">rowSums</span>(model<span class="op">$</span>P[tri_train<span class="op">$</span>userN,] <span class="op">*</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-35" href="#cb12-35" data-line-number="35"><span class="st">                                    </span>model<span class="op">$</span>Q[tri_train<span class="op">$</span>movieN,]))<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb12-36" href="#cb12-36" data-line-number="36">    <span class="op">/</span><span class="st"> </span>nSamples )</a>
+<a class="sourceLine" id="cb12-37" href="#cb12-37" data-line-number="37"></a>
+<a class="sourceLine" id="cb12-38" href="#cb12-38" data-line-number="38">  <span class="co"># Compares to RMSE before update</span></a>
+<a class="sourceLine" id="cb12-39" href="#cb12-39" data-line-number="39">  model<span class="op">$</span>WORSE_RMSE &lt;-<span class="st"> </span>(model<span class="op">$</span>RMSE <span class="op">&lt;</span><span class="st"> </span>error)</a>
+<a class="sourceLine" id="cb12-40" href="#cb12-40" data-line-number="40">  model<span class="op">$</span>RMSE &lt;-<span class="st"> </span>error</a>
+<a class="sourceLine" id="cb12-41" href="#cb12-41" data-line-number="41">  </a>
+<a class="sourceLine" id="cb12-42" href="#cb12-42" data-line-number="42">  <span class="co"># Print some information to keep track of success</span></a>
+<a class="sourceLine" id="cb12-43" href="#cb12-43" data-line-number="43">  <span class="cf">if</span> (verbose) {</a>
+<a class="sourceLine" id="cb12-44" href="#cb12-44" data-line-number="44">    <span class="kw">cat</span>(<span class="st">&quot;  # features=&quot;</span>, <span class="kw">ncol</span>(model<span class="op">$</span>P),</a>
+<a class="sourceLine" id="cb12-45" href="#cb12-45" data-line-number="45">        <span class="st">&quot;  J=&quot;</span>,  nSamples <span class="op">*</span><span class="st"> </span>error <span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-46" href="#cb12-46" data-line-number="46"><span class="st">          </span>lambda<span class="op">/</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sum</span>(model<span class="op">$</span>P<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">sum</span>(model<span class="op">$</span>Q<span class="op">^</span><span class="dv">2</span>)),</a>
+<a class="sourceLine" id="cb12-47" href="#cb12-47" data-line-number="47">        <span class="st">&quot;  Z-scores RMSE=&quot;</span>, model<span class="op">$</span>RMSE,</a>
+<a class="sourceLine" id="cb12-48" href="#cb12-48" data-line-number="48">        <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb12-49" href="#cb12-49" data-line-number="49">    <span class="kw">flush.console</span>()</a>
+<a class="sourceLine" id="cb12-50" href="#cb12-50" data-line-number="50">  }</a>
+<a class="sourceLine" id="cb12-51" href="#cb12-51" data-line-number="51"></a>
+<a class="sourceLine" id="cb12-52" href="#cb12-52" data-line-number="52">    <span class="kw">return</span>(model)</a>
+<a class="sourceLine" id="cb12-53" href="#cb12-53" data-line-number="53">}</a></code></pre></div>
+<p></p>
+<p>Now that the functions are defined, we prepare the data sets.</p>
+<ul>
+<li>First load the original data if not already available.</li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" href="#cb13-1" data-line-number="1"><span class="co"># Load the datasets which were saved on disk after using the course source code.</span></a>
+<a class="sourceLine" id="cb13-2" href="#cb13-2" data-line-number="2"><span class="cf">if</span>(<span class="op">!</span><span class="kw">exists</span>(<span class="st">&quot;edx&quot;</span>))        edx &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;datasets/edx.rds&quot;</span>)</a>
+<a class="sourceLine" id="cb13-3" href="#cb13-3" data-line-number="3"><span class="cf">if</span>(<span class="op">!</span><span class="kw">exists</span>(<span class="st">&quot;validation&quot;</span>)) validation &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;datasets/validation.rds&quot;</span>)</a></code></pre></div>
+<p></p>
+<ul>
+<li>Calculate the z-score of all ratings.</li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" href="#cb14-1" data-line-number="1"><span class="co"># Creates a movie index from 1 to nMovies</span></a>
+<a class="sourceLine" id="cb14-2" href="#cb14-2" data-line-number="2">r_m &lt;-<span class="st"> </span><span class="kw">mean</span>(edx<span class="op">$</span>rating)</a>
+<a class="sourceLine" id="cb14-3" href="#cb14-3" data-line-number="3">r_sd &lt;-<span class="st"> </span><span class="kw">sd</span>(edx<span class="op">$</span>rating)</a>
+<a class="sourceLine" id="cb14-4" href="#cb14-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb14-5" href="#cb14-5" data-line-number="5">training_set &lt;-<span class="st"> </span>edx <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-6" href="#cb14-6" data-line-number="6"><span class="st">  </span><span class="kw">select</span>(userId, movieId, rating) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-7" href="#cb14-7" data-line-number="7"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">rating_z =</span> (rating <span class="op">-</span><span class="st"> </span>r_m) <span class="op">/</span><span class="st"> </span>r_sd)</a>
+<a class="sourceLine" id="cb14-8" href="#cb14-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb14-9" href="#cb14-9" data-line-number="9">test_set &lt;-<span class="st"> </span>validation <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-10" href="#cb14-10" data-line-number="10"><span class="st">  </span><span class="kw">select</span>(userId, movieId, rating) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-11" href="#cb14-11" data-line-number="11"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">rating_z =</span> (rating <span class="op">-</span><span class="st"> </span>r_m) <span class="op">/</span><span class="st"> </span>r_sd)</a></code></pre></div>
+<p></p>
+<ul>
+<li>We do not know if there are any gaps in the userId’s and movieId’s in the datasets. They cannot be used as the row numbers of the <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> matrices. Therefore we count how many distinct users and movies there are and create an index to link a movieId (resp. userId) to its <span class="math inline">\(Q\)</span> (resp. <span class="math inline">\(P\)</span>) -matrix row number.</li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" href="#cb15-1" data-line-number="1">movieIndex &lt;-</a>
+<a class="sourceLine" id="cb15-2" href="#cb15-2" data-line-number="2"><span class="st">  </span>training_set <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb15-3" href="#cb15-3" data-line-number="3"><span class="st">  </span><span class="kw">distinct</span>(movieId) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb15-4" href="#cb15-4" data-line-number="4"><span class="st">  </span><span class="kw">arrange</span>(movieId) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb15-5" href="#cb15-5" data-line-number="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">movieN =</span> <span class="kw">row_number</span>())</a>
+<a class="sourceLine" id="cb15-6" href="#cb15-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb15-7" href="#cb15-7" data-line-number="7">userIndex &lt;-</a>
+<a class="sourceLine" id="cb15-8" href="#cb15-8" data-line-number="8"><span class="st">  </span>training_set <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb15-9" href="#cb15-9" data-line-number="9"><span class="st">  </span><span class="kw">distinct</span>(userId) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb15-10" href="#cb15-10" data-line-number="10"><span class="st">  </span><span class="kw">arrange</span>(userId) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb15-11" href="#cb15-11" data-line-number="11"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">userN =</span> <span class="kw">row_number</span>())</a></code></pre></div>
+<p></p>
+<ul>
+<li>For each movie and user, we calculate its mean rating z-score.</li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" href="#cb16-1" data-line-number="1">movieMean &lt;-</a>
+<a class="sourceLine" id="cb16-2" href="#cb16-2" data-line-number="2"><span class="st">  </span>training_set <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-3" href="#cb16-3" data-line-number="3"><span class="st">  </span><span class="kw">group_by</span>(movieId) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-4" href="#cb16-4" data-line-number="4"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">m =</span> <span class="kw">mean</span>(rating_z))</a>
+<a class="sourceLine" id="cb16-5" href="#cb16-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb16-6" href="#cb16-6" data-line-number="6">userMean &lt;-</a>
+<a class="sourceLine" id="cb16-7" href="#cb16-7" data-line-number="7"><span class="st">  </span>training_set <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-8" href="#cb16-8" data-line-number="8"><span class="st">  </span><span class="kw">group_by</span>(userId) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-9" href="#cb16-9" data-line-number="9"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">m =</span> <span class="kw">mean</span>(rating_z))</a></code></pre></div>
+<p></p>
+<ul>
+<li>We can now create the training and validation sets contining the movie index (instead of the movieId), user index and ratings (original and z-score).</li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" href="#cb17-1" data-line-number="1"><span class="co"># Training triplets with z_score</span></a>
+<a class="sourceLine" id="cb17-2" href="#cb17-2" data-line-number="2">tri_train &lt;-<span class="st"> </span>training_set <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-3" href="#cb17-3" data-line-number="3"><span class="st">  </span><span class="kw">left_join</span>(userIndex, <span class="dt">by =</span> <span class="st">&quot;userId&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-4" href="#cb17-4" data-line-number="4"><span class="st">  </span><span class="kw">left_join</span>(movieIndex, <span class="dt">by =</span> <span class="st">&quot;movieId&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-5" href="#cb17-5" data-line-number="5"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>userId, <span class="op">-</span>movieId)</a>
+<a class="sourceLine" id="cb17-6" href="#cb17-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb17-7" href="#cb17-7" data-line-number="7">tri_test &lt;-<span class="st"> </span>test_set <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-8" href="#cb17-8" data-line-number="8"><span class="st">  </span><span class="kw">select</span>(userId, movieId, rating) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-9" href="#cb17-9" data-line-number="9"><span class="st">  </span><span class="kw">left_join</span>(userIndex, <span class="dt">by =</span> <span class="st">&quot;userId&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-10" href="#cb17-10" data-line-number="10"><span class="st">  </span><span class="kw">left_join</span>(movieIndex, <span class="dt">by =</span> <span class="st">&quot;movieId&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-11" href="#cb17-11" data-line-number="11"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>userId, <span class="op">-</span>movieId) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb17-12" href="#cb17-12" data-line-number="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">rating_z =</span> (rating <span class="op">-</span><span class="st"> </span>r_m)<span class="op">/</span>r_sd,</a>
+<a class="sourceLine" id="cb17-13" href="#cb17-13" data-line-number="13">         <span class="dt">error =</span> <span class="dv">0</span>)</a></code></pre></div>
+<p></p>
+<p></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" href="#cb18-1" data-line-number="1">nSamples &lt;-<span class="st"> </span><span class="kw">nrow</span>(tri_train)</a>
+<a class="sourceLine" id="cb18-2" href="#cb18-2" data-line-number="2">nTest &lt;-<span class="st"> </span><span class="kw">nrow</span>(tri_test)</a>
+<a class="sourceLine" id="cb18-3" href="#cb18-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb18-4" href="#cb18-4" data-line-number="4">nUsers &lt;-<span class="st"> </span>tri_train <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(userN) <span class="op">%&gt;%</span><span class="st">  </span><span class="kw">n_distinct</span>()</a>
+<a class="sourceLine" id="cb18-5" href="#cb18-5" data-line-number="5">nMovies &lt;-<span class="st"> </span>tri_train <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(movieN) <span class="op">%&gt;%</span><span class="st">  </span><span class="kw">n_distinct</span>()</a></code></pre></div>
+<p></p>
+<ul>
+<li>The <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> matrices are defined with 3 latent factors to start with.</li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" href="#cb19-1" data-line-number="1"><span class="co"># number of initial latent factors</span></a>
+<a class="sourceLine" id="cb19-2" href="#cb19-2" data-line-number="2">nLF &lt;-<span class="st"> </span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb19-3" href="#cb19-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb19-4" href="#cb19-4" data-line-number="4">LF_Model &lt;-<span class="st"> </span><span class="kw">list</span>( <span class="dt">P =</span> <span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> nUsers, <span class="dt">ncol =</span> nLF),</a>
+<a class="sourceLine" id="cb19-5" href="#cb19-5" data-line-number="5">                  <span class="dt">Q =</span> <span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> nMovies, <span class="dt">ncol =</span> nLF),</a>
+<a class="sourceLine" id="cb19-6" href="#cb19-6" data-line-number="6">                  <span class="dt">RMSE =</span> <span class="fl">1000.0</span>,</a>
+<a class="sourceLine" id="cb19-7" href="#cb19-7" data-line-number="7">                  <span class="dt">WORSE_RMSE =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<p></p>
+<ul>
+<li>To speed up the training, the matrices are initialised so that the cross product is the sum of the movie average z-rating (<span class="math inline">\(m_{movieN}\)</span>) and user z-rating (<span class="math inline">\(u_{userN}\)</span>).</li>
+</ul>
+<p><span class="math display">\[ 
+P \times Q^{\top} = 
+\begin{bmatrix}
+1      &amp; u_{1}      &amp; 0     \\
+1      &amp; u_{2}     &amp; 0      \\
+\vdots &amp; \vdots    &amp; \vdots \\
+1      &amp; u_{i}     &amp; 0      \\
+\vdots &amp; \vdots    &amp; \vdots \\
+1      &amp; u_{nUser} &amp; 0      \\
+\end{bmatrix}
+\times 
+\begin{bmatrix}
+m_{1} &amp; m_{2} &amp; \cdots &amp; m_{j} &amp; \cdots &amp; m_{nMovies} \\
+1     &amp; 1     &amp; \cdots &amp; 1     &amp; \cdots &amp; 1           \\
+0     &amp; 0     &amp; \cdots &amp; 0     &amp; \cdots &amp; 0           \\
+\end{bmatrix}
+= 
+\begin{bmatrix}
+       &amp; \vdots        &amp;        \\
+\cdots &amp; u_{i} + m_{j} &amp; \cdots \\
+       &amp; \vdots        &amp;        \\ 
+\end{bmatrix}
+\]</span></p>
+<p></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" href="#cb20-1" data-line-number="1"><span class="co"># Features matrices are initialised with:</span></a>
+<a class="sourceLine" id="cb20-2" href="#cb20-2" data-line-number="2"><span class="co"># Users: 1st column is 1, 2nd is the mean rating (centered), rest is noise</span></a>
+<a class="sourceLine" id="cb20-3" href="#cb20-3" data-line-number="3"><span class="co"># Movies: 1st column is the mean rating (centered), 2nd is 1, rest is noise</span></a>
+<a class="sourceLine" id="cb20-4" href="#cb20-4" data-line-number="4"><span class="co">#</span></a>
+<a class="sourceLine" id="cb20-5" href="#cb20-5" data-line-number="5"><span class="co"># That way, the matrix multiplication will start by giving reasonable value</span></a>
+<a class="sourceLine" id="cb20-6" href="#cb20-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb20-7" href="#cb20-7" data-line-number="7">LF_Model<span class="op">$</span>P[,<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>, <span class="dt">nrow =</span> nUsers, <span class="dt">ncol =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb20-8" href="#cb20-8" data-line-number="8">LF_Model<span class="op">$</span>P[,<span class="dv">2</span>] &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(userIndex <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb20-9" href="#cb20-9" data-line-number="9"><span class="st">                              </span><span class="kw">left_join</span>(userMean, <span class="dt">by =</span><span class="st">&quot;userId&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(m))</a>
+<a class="sourceLine" id="cb20-10" href="#cb20-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb20-11" href="#cb20-11" data-line-number="11">LF_Model<span class="op">$</span>Q[,<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(movieIndex <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb20-12" href="#cb20-12" data-line-number="12"><span class="st">                              </span><span class="kw">left_join</span>(movieMean, <span class="dt">by =</span><span class="st">&quot;movieId&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(m))</a>
+<a class="sourceLine" id="cb20-13" href="#cb20-13" data-line-number="13">LF_Model<span class="op">$</span>Q[,<span class="dv">2</span>] &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>, <span class="dt">nrow =</span> nMovies, <span class="dt">ncol =</span> <span class="dv">1</span>)</a></code></pre></div>
+<p></p>
+<ul>
+<li>Random noise is added to all model parameters, otherwise the gradient descent has nowhere to start (zeros wipe everything in the matrix multiplications).</li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" href="#cb21-1" data-line-number="1"><span class="co"># Add random noise</span></a>
+<a class="sourceLine" id="cb21-2" href="#cb21-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">42</span>, <span class="dt">sample.kind =</span> <span class="st">&quot;Rounding&quot;</span>)</a>
+<a class="sourceLine" id="cb21-3" href="#cb21-3" data-line-number="3">LF_Model<span class="op">$</span>P &lt;-<span class="st"> </span>LF_Model<span class="op">$</span>P <span class="op">+</span><span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(nUsers <span class="op">*</span><span class="st"> </span>nLF,</a>
+<a class="sourceLine" id="cb21-4" href="#cb21-4" data-line-number="4">                                              <span class="dt">mean =</span> <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb21-5" href="#cb21-5" data-line-number="5">                                              <span class="dt">sd =</span> <span class="fl">0.01</span>),</a>
+<a class="sourceLine" id="cb21-6" href="#cb21-6" data-line-number="6">                                        <span class="dt">nrow =</span> nUsers,</a>
+<a class="sourceLine" id="cb21-7" href="#cb21-7" data-line-number="7">                                        <span class="dt">ncol =</span> nLF)</a>
+<a class="sourceLine" id="cb21-8" href="#cb21-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb21-9" href="#cb21-9" data-line-number="9">LF_Model<span class="op">$</span>Q &lt;-<span class="st"> </span>LF_Model<span class="op">$</span>Q <span class="op">+</span><span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(nMovies <span class="op">*</span><span class="st"> </span>nLF,</a>
+<a class="sourceLine" id="cb21-10" href="#cb21-10" data-line-number="10">                                              <span class="dt">mean =</span> <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb21-11" href="#cb21-11" data-line-number="11">                                              <span class="dt">sd =</span> <span class="fl">0.01</span>),</a>
+<a class="sourceLine" id="cb21-12" href="#cb21-12" data-line-number="12">                                        <span class="dt">nrow =</span> nMovies,</a>
+<a class="sourceLine" id="cb21-13" href="#cb21-13" data-line-number="13">                                        <span class="dt">ncol =</span> nLF)</a></code></pre></div>
+<p></p>
+<ul>
+<li>We also have a list that keeps track of all the training steps and values.</li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" href="#cb22-1" data-line-number="1"><span class="kw">rm</span>(list_results)</a>
+<a class="sourceLine" id="cb22-2" href="#cb22-2" data-line-number="2">list_results &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="st">&quot;alpha&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(), </a>
+<a class="sourceLine" id="cb22-3" href="#cb22-3" data-line-number="3">                       <span class="st">&quot;lambda&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(),</a>
+<a class="sourceLine" id="cb22-4" href="#cb22-4" data-line-number="4">                       <span class="st">&quot;nFeatures&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(),</a>
+<a class="sourceLine" id="cb22-5" href="#cb22-5" data-line-number="5">                       <span class="st">&quot;rmse_training_z_score&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(),</a>
+<a class="sourceLine" id="cb22-6" href="#cb22-6" data-line-number="6">                       <span class="st">&quot;rmse_training&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(), </a>
+<a class="sourceLine" id="cb22-7" href="#cb22-7" data-line-number="7">                       <span class="st">&quot;rmse_validation&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>())</a></code></pre></div>
+<p></p>
+<p>The main training loop runs as follows:</p>
+<ul>
+<li><p>We start with 3 features.</p></li>
+<li><p>The model is updated in batches of 100 updates. This is done up to 250 times. At each time, if the model starts diverging, the learning parameter (<span class="math inline">\(\alpha\)</span>) is reduced.</p></li>
+<li><p>Once the 250 times have passed, or if <span class="math inline">\(\alpha\)</span> has become incredibly small, or if the RMSE doesn’t really improve anymoe (by less than 1 millionth), we add another features and start again.</p></li>
+</ul>
+<p></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode numberSource r numberLines lineAnchors"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" href="#cb23-1" data-line-number="1">initial_alpha &lt;-<span class="st"> </span><span class="fl">0.1</span></a>
+<a class="sourceLine" id="cb23-2" href="#cb23-2" data-line-number="2"><span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>){</a>
+<a class="sourceLine" id="cb23-3" href="#cb23-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb23-4" href="#cb23-4" data-line-number="4">  <span class="co"># Current number of features</span></a>
+<a class="sourceLine" id="cb23-5" href="#cb23-5" data-line-number="5">  number_features &lt;-<span class="st"> </span><span class="kw">ncol</span>(LF_Model<span class="op">$</span>P)</a>
+<a class="sourceLine" id="cb23-6" href="#cb23-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb23-7" href="#cb23-7" data-line-number="7">  <span class="co"># lambda = 0.01 for 25 features, i.e. for about 2,000,000 parameters.</span></a>
+<a class="sourceLine" id="cb23-8" href="#cb23-8" data-line-number="8">  <span class="co"># We keep lambda proportional to the number of features</span></a>
+<a class="sourceLine" id="cb23-9" href="#cb23-9" data-line-number="9">  lambda &lt;-<span class="st"> </span><span class="fl">0.1</span> <span class="op">*</span><span class="st"> </span>(nUsers <span class="op">+</span><span class="st"> </span>nMovies) <span class="op">*</span><span class="st"> </span>number_features <span class="op">/</span><span class="st"> </span><span class="dv">2000000</span></a>
+<a class="sourceLine" id="cb23-10" href="#cb23-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb23-11" href="#cb23-11" data-line-number="11">  alpha &lt;-<span class="st"> </span>initial_alpha</a>
+<a class="sourceLine" id="cb23-12" href="#cb23-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb23-13" href="#cb23-13" data-line-number="13">  <span class="kw">cat</span>(<span class="st">&quot;CURRENT FEATURES: &quot;</span>, number_features, </a>
+<a class="sourceLine" id="cb23-14" href="#cb23-14" data-line-number="14">      <span class="st">&quot;---- Pre-training validation RMSE = &quot;</span>, <span class="kw">rmse_validation</span>(), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb23-15" href="#cb23-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb23-16" href="#cb23-16" data-line-number="16">  list_results &lt;-<span class="st"> </span>list_results <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_row</span>(<span class="dt">alpha =</span> alpha, </a>
+<a class="sourceLine" id="cb23-17" href="#cb23-17" data-line-number="17">                                           <span class="dt">lambda =</span> lambda, </a>
+<a class="sourceLine" id="cb23-18" href="#cb23-18" data-line-number="18">                                           <span class="dt">nFeatures =</span> number_features,</a>
+<a class="sourceLine" id="cb23-19" href="#cb23-19" data-line-number="19">                                           <span class="dt">rmse_training_z_score =</span> LF_Model<span class="op">$</span>RMSE,</a>
+<a class="sourceLine" id="cb23-20" href="#cb23-20" data-line-number="20">                                           <span class="dt">rmse_training =</span> <span class="kw">rmse_training</span>(), </a>
+<a class="sourceLine" id="cb23-21" href="#cb23-21" data-line-number="21">                                           <span class="dt">rmse_validation =</span> <span class="kw">rmse_validation</span>())</a>
+<a class="sourceLine" id="cb23-22" href="#cb23-22" data-line-number="22">      </a>
+<a class="sourceLine" id="cb23-23" href="#cb23-23" data-line-number="23">  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">250</span>){</a>
+<a class="sourceLine" id="cb23-24" href="#cb23-24" data-line-number="24">    pre_RMSE &lt;-<span class="st"> </span>LF_Model<span class="op">$</span>RMSE</a>
+<a class="sourceLine" id="cb23-25" href="#cb23-25" data-line-number="25">    LF_Model &lt;-<span class="st"> </span><span class="kw">stochastic_grad_descent</span>(<span class="dt">model =</span> LF_Model,</a>
+<a class="sourceLine" id="cb23-26" href="#cb23-26" data-line-number="26">                                        <span class="dt">times =</span> <span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb23-27" href="#cb23-27" data-line-number="27">                                        <span class="dt">batch_size =</span> <span class="dv">1000</span> <span class="op">*</span><span class="st"> </span>number_features,</a>
+<a class="sourceLine" id="cb23-28" href="#cb23-28" data-line-number="28">                                        <span class="dt">alpha =</span> alpha,</a>
+<a class="sourceLine" id="cb23-29" href="#cb23-29" data-line-number="29">                                        <span class="dt">lambda =</span> lambda)</a>
+<a class="sourceLine" id="cb23-30" href="#cb23-30" data-line-number="30">    </a>
+<a class="sourceLine" id="cb23-31" href="#cb23-31" data-line-number="31">    list_results &lt;-<span class="st"> </span>list_results <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_row</span>(<span class="dt">alpha =</span> alpha, </a>
+<a class="sourceLine" id="cb23-32" href="#cb23-32" data-line-number="32">                                             <span class="dt">lambda =</span> lambda, </a>
+<a class="sourceLine" id="cb23-33" href="#cb23-33" data-line-number="33">                                             <span class="dt">nFeatures =</span> number_features,</a>
+<a class="sourceLine" id="cb23-34" href="#cb23-34" data-line-number="34">                                             <span class="dt">rmse_training_z_score =</span> LF_Model<span class="op">$</span>RMSE,</a>
+<a class="sourceLine" id="cb23-35" href="#cb23-35" data-line-number="35">                                             <span class="dt">rmse_training =</span> <span class="kw">rmse_training</span>(), </a>
+<a class="sourceLine" id="cb23-36" href="#cb23-36" data-line-number="36">                                             <span class="dt">rmse_validation =</span> <span class="kw">rmse_validation</span>())</a>
+<a class="sourceLine" id="cb23-37" href="#cb23-37" data-line-number="37">    </a>
+<a class="sourceLine" id="cb23-38" href="#cb23-38" data-line-number="38">    <span class="cf">if</span> (LF_Model<span class="op">$</span>WORSE_RMSE) {</a>
+<a class="sourceLine" id="cb23-39" href="#cb23-39" data-line-number="39">      alpha &lt;-<span class="st"> </span>alpha <span class="op">/</span><span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb23-40" href="#cb23-40" data-line-number="40">      <span class="kw">cat</span>(<span class="st">&quot;Decreasing gradient parameter to: &quot;</span>, alpha, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb23-41" href="#cb23-41" data-line-number="41">    }</a>
+<a class="sourceLine" id="cb23-42" href="#cb23-42" data-line-number="42"></a>
+<a class="sourceLine" id="cb23-43" href="#cb23-43" data-line-number="43">    <span class="cf">if</span> (initial_alpha <span class="op">/</span><span class="st"> </span>alpha <span class="op">&gt;</span><span class="st"> </span><span class="dv">1000</span> <span class="op">|</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb23-44" href="#cb23-44" data-line-number="44"><span class="st">        </span><span class="kw">abs</span>( (LF_Model<span class="op">$</span>RMSE <span class="op">-</span><span class="st"> </span>pre_RMSE) <span class="op">/</span><span class="st"> </span>pre_RMSE) <span class="op">&lt;</span><span class="st"> </span><span class="fl">1e-6</span>) {</a>
+<a class="sourceLine" id="cb23-45" href="#cb23-45" data-line-number="45">      <span class="cf">break</span>()</a>
+<a class="sourceLine" id="cb23-46" href="#cb23-46" data-line-number="46">      }</a>
+<a class="sourceLine" id="cb23-47" href="#cb23-47" data-line-number="47">  }</a>
+<a class="sourceLine" id="cb23-48" href="#cb23-48" data-line-number="48"></a>
+<a class="sourceLine" id="cb23-49" href="#cb23-49" data-line-number="49"></a>
+<a class="sourceLine" id="cb23-50" href="#cb23-50" data-line-number="50">  <span class="co"># RMSE against validation set:</span></a>
+<a class="sourceLine" id="cb23-51" href="#cb23-51" data-line-number="51">  rmse_validation_post &lt;-<span class="st"> </span><span class="kw">rmse_validation</span>()</a>
+<a class="sourceLine" id="cb23-52" href="#cb23-52" data-line-number="52">  <span class="kw">cat</span>(<span class="st">&quot;CURRENT FEATURES: &quot;</span>, number_features, </a>
+<a class="sourceLine" id="cb23-53" href="#cb23-53" data-line-number="53">      <span class="st">&quot;---- POST-training validation RMSE = &quot;</span>, rmse_validation_post, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb23-54" href="#cb23-54" data-line-number="54"></a>
+<a class="sourceLine" id="cb23-55" href="#cb23-55" data-line-number="55">  <span class="co"># if (number_features == 12){</span></a>
+<a class="sourceLine" id="cb23-56" href="#cb23-56" data-line-number="56">  <span class="co">#   break()</span></a>
+<a class="sourceLine" id="cb23-57" href="#cb23-57" data-line-number="57">  <span class="co"># }</span></a>
+<a class="sourceLine" id="cb23-58" href="#cb23-58" data-line-number="58"></a>
+<a class="sourceLine" id="cb23-59" href="#cb23-59" data-line-number="59"></a>
+<a class="sourceLine" id="cb23-60" href="#cb23-60" data-line-number="60">  <span class="co"># Add k features</span></a>
+<a class="sourceLine" id="cb23-61" href="#cb23-61" data-line-number="61">  k_features &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb23-62" href="#cb23-62" data-line-number="62">  LF_Model<span class="op">$</span>P &lt;-<span class="st"> </span><span class="kw">cbind</span>(LF_Model<span class="op">$</span>P,</a>
+<a class="sourceLine" id="cb23-63" href="#cb23-63" data-line-number="63">                         <span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="kw">nrow</span>(LF_Model<span class="op">$</span>P) <span class="op">*</span><span class="st"> </span>k_features,</a>
+<a class="sourceLine" id="cb23-64" href="#cb23-64" data-line-number="64">                                      <span class="dt">mean =</span> <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb23-65" href="#cb23-65" data-line-number="65">                                      <span class="dt">sd =</span> <span class="kw">sd</span>(LF_Model<span class="op">$</span>P)<span class="op">/</span><span class="dv">100</span>),</a>
+<a class="sourceLine" id="cb23-66" href="#cb23-66" data-line-number="66">                                <span class="dt">nrow =</span> <span class="kw">nrow</span>(LF_Model<span class="op">$</span>P),</a>
+<a class="sourceLine" id="cb23-67" href="#cb23-67" data-line-number="67">                                <span class="dt">ncol =</span> k_features))</a>
+<a class="sourceLine" id="cb23-68" href="#cb23-68" data-line-number="68"></a>
+<a class="sourceLine" id="cb23-69" href="#cb23-69" data-line-number="69">  LF_Model<span class="op">$</span>Q &lt;-<span class="st"> </span><span class="kw">cbind</span>(LF_Model<span class="op">$</span>Q,</a>
+<a class="sourceLine" id="cb23-70" href="#cb23-70" data-line-number="70">                      <span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="kw">nrow</span>(LF_Model<span class="op">$</span>Q) <span class="op">*</span><span class="st"> </span>k_features,</a>
+<a class="sourceLine" id="cb23-71" href="#cb23-71" data-line-number="71">                                   <span class="dt">mean =</span> <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb23-72" href="#cb23-72" data-line-number="72">                                   <span class="dt">sd =</span> <span class="kw">sd</span>(LF_Model<span class="op">$</span>Q)<span class="op">/</span><span class="dv">100</span>),</a>
+<a class="sourceLine" id="cb23-73" href="#cb23-73" data-line-number="73">                             <span class="dt">nrow =</span> <span class="kw">nrow</span>(LF_Model<span class="op">$</span>Q),</a>
+<a class="sourceLine" id="cb23-74" href="#cb23-74" data-line-number="74">                             <span class="dt">ncol =</span> k_features))</a>
+<a class="sourceLine" id="cb23-75" href="#cb23-75" data-line-number="75"></a>
+<a class="sourceLine" id="cb23-76" href="#cb23-76" data-line-number="76">}</a></code></pre></div>
+<p></p>
+<p>The following table shows the RMSE on the validation set that is obtained for a given number of features.</p>
+<p></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode numberSource numberLines lineAnchors chunkout"><code class="sourceCode"><a class="sourceLine" id="cb24-1" href="#cb24-1" data-line-number="1">## # A tibble: 9 x 2</a>
+<a class="sourceLine" id="cb24-2" href="#cb24-2" data-line-number="2">##   nFeatures best_RMSE</a>
+<a class="sourceLine" id="cb24-3" href="#cb24-3" data-line-number="3">##       &lt;dbl&gt;     &lt;dbl&gt;</a>
+<a class="sourceLine" id="cb24-4" href="#cb24-4" data-line-number="4">## 1         3     0.830</a>
+<a class="sourceLine" id="cb24-5" href="#cb24-5" data-line-number="5">## 2         4     0.829</a>
+<a class="sourceLine" id="cb24-6" href="#cb24-6" data-line-number="6">## 3         5     0.818</a>
+<a class="sourceLine" id="cb24-7" href="#cb24-7" data-line-number="7">## 4         6     0.810</a>
+<a class="sourceLine" id="cb24-8" href="#cb24-8" data-line-number="8">## 5         7     0.804</a>
+<a class="sourceLine" id="cb24-9" href="#cb24-9" data-line-number="9">## 6         8     0.804</a>
+<a class="sourceLine" id="cb24-10" href="#cb24-10" data-line-number="10">## 7         9     0.802</a>
+<a class="sourceLine" id="cb24-11" href="#cb24-11" data-line-number="11">## 8        10     0.802</a>
+<a class="sourceLine" id="cb24-12" href="#cb24-12" data-line-number="12">## 9        11     0.800</a></code></pre></div>
+<p></p>
+<p>This plot shows the progress of the RMSE on the validation set. It shows an overall improvement with the number of features, with little worsening spikes each time a feature seeded with random values is added.</p>
+<p></p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-27"></span>
+<img src="build/figure/graphics-unnamed-chunk-27-1.png" alt="Plot of the RmSE on the validation test" width="70%" />
+<p class="caption">
+Figure 5.1: Plot of the RmSE on the validation test
+</p>
+</div>
+<p></p>
+<p>We also developed a re-implementation in Julia (availabe on Gihub) that we used to cross-check the R implementation. It gave similar results (in much less time):</p>
+
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-shalev2014understanding">
+<p>Shalev-Shwartz, Shai, and Shai Ben-David. 2014. <em>Understanding Machine Learning: From Theory to Algorithms</em>. Cambridge university press. <a href="https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/index.html" class="uri">https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/index.html</a>.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="7">
+<li id="fn7"><p>This is a white lie since many more hours went into exploring the various parameters.<a href="stochastic-gradient-descent.html#fnref7" class="footnote-back">↩</a></p></li>
+<li id="fn8"><p>See <a href="https://sdsawtelle.github.io/blog/output/week9-recommender-andrew-ng-machine-learning-with-python.html" class="uri">https://sdsawtelle.github.io/blog/output/week9-recommender-andrew-ng-machine-learning-with-python.html</a><a href="stochastic-gradient-descent.html#fnref8" class="footnote-back">↩</a></p></li>
+<li id="fn9"><p><a href="https://en.wikipedia.org/wiki/Singular_value_decomposition" class="uri">https://en.wikipedia.org/wiki/Singular_value_decomposition</a><a href="stochastic-gradient-descent.html#fnref9" class="footnote-back">↩</a></p></li>
+<li id="fn10"><p>source: <a href="https://towardsdatascience.com/large-scale-jobs-recommendation-engine-using-implicit-data-in-pyspark-ccf8df5d910e" class="uri">https://towardsdatascience.com/large-scale-jobs-recommendation-engine-using-implicit-data-in-pyspark-ccf8df5d910e</a><a href="stochastic-gradient-descent.html#fnref10" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="model.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="appendix.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/Emmanuel-R8/HarvardX-Movielens/edit/master/5_Stochastic_descent.rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["HarvardX - PH125.9x Data Science: Capstone - Movie Lens.pdf", "HarvardX - PH125.9x Data Science: Capstone - Movie Lens.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
